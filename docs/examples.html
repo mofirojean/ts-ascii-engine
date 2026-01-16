@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Working examples and demos for ts-ascii-engine">
+  <title>Examples - ts-ascii-engine</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Remix Icon -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+  <!-- UI Logic -->
+  <script src="js/ui.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+           <i class="ri-artboard-2-line"></i> ts-ascii-engine
+        </a>
+        <nav class="nav">
+          <a href="index.html" class="nav-link"><i class="ri-home-line"></i> Home</a>
+          <a href="api.html" class="nav-link"><i class="ri-book-open-line"></i> API Reference</a>
+          <a href="examples.html" class="nav-link active"><i class="ri-code-s-slash-line"></i> Examples</a>
+          <a href="security.html" class="nav-link"><i class="ri-shield-check-line"></i> Security</a>
+          <a href="https://github.com/yourusername/ts-ascii-engine" class="nav-link"><i class="ri-github-line"></i> GitHub</a>
+          <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+            <i class="ri-moon-line"></i>
+          </button>
+        </nav>
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open menu">
+          <i class="ri-menu-4-line"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-group">
+          <h3 class="sidebar-heading">Examples</h3>
+          <nav>
+            <a href="#image" class="sidebar-link"><i class="ri-image-line"></i> Image Converter</a>
+            <a href="#video" class="sidebar-link"><i class="ri-video-line"></i> Video Stream</a>
+            <a href="#text" class="sidebar-link"><i class="ri-text"></i> Text Banner</a>
+            <a href="#colored" class="sidebar-link"><i class="ri-palette-line"></i> Colored ASCII</a>
+            <a href="#charsets" class="sidebar-link"><i class="ri-font-size"></i> Character Sets</a>
+            <a href="#games" class="sidebar-link"><i class="ri-gamepad-line"></i> Game Graphics</a>
+          </nav>
+        </div>
+
+        <div class="sidebar-group">
+          <h3 class="sidebar-heading">Advanced</h3>
+          <nav>
+            <a href="#animation" class="sidebar-link"><i class="ri-movie-line"></i> Animation</a>
+            <a href="#effects" class="sidebar-link"><i class="ri-magic-line"></i> Visual Effects</a>
+            <a href="#performance" class="sidebar-link"><i class="ri-speed-up-line"></i> Performance</a>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Title -->
+        <div class="mb-4">
+          <h1>Live Examples</h1>
+          <p class="text-xl text-secondary">Interactive demonstrations of ts-ascii-engine capabilities</p>
+        </div>
+
+        <!-- Image Converter -->
+        <section id="image" class="mb-4">
+          <h2><i class="ri-image-add-line"></i> Image Converter</h2>
+          <p>Upload any image and convert it to ASCII art with customizable settings.</p>
+
+          <div class="demo-box">
+            <div class="demo-controls">
+              <div class="control-group">
+                <label class="control-label">Upload Image</label>
+                <input type="file" id="imageInput" accept="image/*" class="form-control">
+              </div>
+
+              <div class="control-group">
+                <label for="imageCharset" class="control-label">Character Set</label>
+                <select id="imageCharset" onchange="updateImageDemo()" class="form-control">
+                  <option value="BLOCK" selected>Block</option>
+                  <option value="STANDARD">Standard</option>
+                  <option value="MINIMAL">Minimal</option>
+                  <option value="EXTENDED">Extended</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="imageWidth" class="control-label">Width: <span id="imageWidthValue">100</span></label>
+                <input type="range" id="imageWidth" min="20" max="200" value="100" oninput="updateImageWidth(this.value)" style="width: 100%">
+              </div>
+
+              <div class="control-group">
+                <label class="control-label">Options</label>
+                <label>
+                  <input type="checkbox" id="imageColored" onchange="updateImageDemo()"> Colored
+                </label>
+              </div>
+            </div>
+
+            <div class="demo-output" id="imageOutput" style="min-height: 300px;">
+              <p style="color: #666; text-align: center; padding: 40px;">Upload an image to see the result</p>
+            </div>
+          </div>
+
+          <details class="card" style="cursor: pointer;">
+            <summary style="font-weight: 600; padding: 10px;">View Source Code</summary>
+            <pre style="margin-top: 20px;"><code>import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+const generator = new AsciiGenerator({
+  charset: CharsetPreset.BLOCK,
+  width: 100,
+  colored: true
+});
+
+const input = document.getElementById('imageInput');
+input.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (event) => {
+    const img = new Image();
+    img.onload = () => {
+      const result = generator.convertImage(img);
+      document.getElementById('output').innerHTML = result.html;
+    };
+    img.src = event.target.result;
+  };
+
+  reader.readAsDataURL(file);
+});</code></pre>
+          </details>
+        </section>
+
+        <!-- Video Stream -->
+        <section id="video" class="mb-4">
+          <h2><i class="ri-video-chat-line"></i> Real-time Video Stream</h2>
+          <p>Convert webcam feed to ASCII art in real-time at 30+ FPS.</p>
+
+          <div class="demo-box">
+            <div class="demo-controls">
+              <div class="control-group">
+                <label class="control-label">Controls</label>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-primary" id="startVideo" onclick="startVideoDemo()"><i class="ri-play-fill"></i> Start Webcam</button>
+                  <button class="btn btn-secondary" id="stopVideo" onclick="stopVideoDemo()" disabled><i class="ri-stop-fill"></i> Stop</button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label for="videoCharset" class="control-label">Character Set</label>
+                <select id="videoCharset" onchange="updateVideoConfig()" class="form-control">
+                  <option value="BLOCK" selected>Block</option>
+                  <option value="STANDARD">Standard</option>
+                  <option value="MINIMAL">Minimal</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="videoWidth" class="control-label">Width: <span id="videoWidthValue">80</span></label>
+                <input type="range" id="videoWidth" min="30" max="150" value="80" oninput="updateVideoWidth(this.value)" style="width: 100%">
+              </div>
+
+              <div class="control-group">
+                <label class="control-label">FPS: <span id="fpsCounter">0</span></label>
+              </div>
+            </div>
+
+            <video id="webcam" style="display: none;"></video>
+            <div class="demo-output" id="videoOutput" style="min-height: 400px;">
+              <p style="color: #666; text-align: center; padding: 40px;">Click "Start Webcam" to begin</p>
+            </div>
+          </div>
+
+          <div class="card" style="background: var(--bg-secondary);">
+            <strong>Tip:</strong> Lower width values provide higher FPS. Try width 40-60 for smoothest performance.
+          </div>
+
+          <details class="card mt-2" style="cursor: pointer;">
+            <summary style="font-weight: 600; padding: 10px;">View Source Code</summary>
+            <pre style="margin-top: 20px;"><code>import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+const generator = new AsciiGenerator({
+  charset: CharsetPreset.BLOCK,
+  width: 80,
+  colored: false
+});
+
+const video = document.getElementById('webcam');
+const output = document.getElementById('output');
+
+// Start webcam
+async function startWebcam() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { width: 640, height: 480 }
+  });
+  video.srcObject = stream;
+  video.play();
+  renderLoop();
+}
+
+// Render loop
+function renderLoop() {
+  const result = generator.convertImage(video);
+  output.innerHTML = result.html;
+  requestAnimationFrame(renderLoop);
+}
+
+startWebcam();</code></pre>
+          </details>
+        </section>
+
+        <!-- Text Banner -->
+        <section id="text" class="mb-4">
+          <h2><i class="ri-text"></i> Text to ASCII Banner</h2>
+          <p>Convert text into ASCII art using any system font.</p>
+
+          <div class="demo-box">
+            <div class="demo-controls">
+              <div class="control-group">
+                <label for="textInput" class="control-label">Text</label>
+                <input type="text" id="textInput" value="HELLO" maxlength="20" oninput="updateTextDemo()" class="form-control">
+              </div>
+
+              <div class="control-group">
+                <label for="textFont" class="control-label">Font</label>
+                <select id="textFont" onchange="updateTextDemo()" class="form-control">
+                  <option value="Arial" selected>Arial</option>
+                  <option value="Impact">Impact</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Courier New">Courier New</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="textSize" class="control-label">Font Size: <span id="textSizeValue">72</span>px</label>
+                <input type="range" id="textSize" min="24" max="200" value="72" oninput="updateTextSize(this.value)" style="width: 100%">
+              </div>
+
+              <div class="control-group">
+                <label for="textWeight" class="control-label">Font Weight</label>
+                <select id="textWeight" onchange="updateTextDemo()" class="form-control">
+                  <option value="normal">Normal</option>
+                  <option value="bold" selected>Bold</option>
+                  <option value="900">Black</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="demo-output" id="textOutput" style="min-height: 200px;">
+              <!-- Text output will appear here -->
+            </div>
+          </div>
+
+          <details class="card" style="cursor: pointer;">
+            <summary style="font-weight: 600; padding: 10px;">View Source Code</summary>
+            <pre style="margin-top: 20px;"><code>import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+const generator = new AsciiGenerator({
+  charset: CharsetPreset.STANDARD,
+  width: 0 // Auto width
+});
+
+const result = generator.convertText('HELLO', {
+  font: 'Impact',
+  fontSize: 72,
+  fontWeight: 'bold',
+  fontStyle: 'normal'
+});
+
+console.log(result.text);</code></pre>
+          </details>
+        </section>
+
+        <!-- Colored ASCII -->
+        <section id="colored" class="mb-4">
+          <h2><i class="ri-palette-line"></i> Colored ASCII Art</h2>
+          <p>Preserve original image colors for vibrant ASCII art.</p>
+
+          <div class="card" style="background: #ecfdf5; border-color: var(--success); color: #065f46;">
+            <strong>Feature:</strong> Colored mode maintains the original image colors while converting to ASCII characters.
+          </div>
+
+          <div class="demo-box mt-4">
+            <button class="btn btn-primary" onclick="loadColoredDemo()">Load Colorful Example</button>
+            <div class="demo-output" id="coloredOutput" style="min-height: 300px; margin-top: 20px;">
+              <p style="color: #666; text-align: center; padding: 40px;">Click the button to see colored ASCII art</p>
+            </div>
+          </div>
+
+          <details class="card" style="cursor: pointer;">
+            <summary style="font-weight: 600; padding: 10px;">View Source Code</summary>
+            <pre style="margin-top: 20px;"><code>import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+const generator = new AsciiGenerator({
+  charset: CharsetPreset.BLOCK,
+  width: 100,
+  colored: true  // Enable colored mode
+});
+
+const result = generator.convertImage(img);
+document.getElementById('output').innerHTML = result.html;</code></pre>
+          </details>
+        </section>
+
+        <!-- Character Sets Comparison -->
+        <section id="charsets" class="mb-4">
+          <h2><i class="ri-font-size"></i> Character Set Comparison</h2>
+          <p>Compare different character sets and their effects.</p>
+
+          <div class="card-grid">
+            <div class="card">
+              <h3>BLOCK</h3>
+              <p><code>██▓▒░ </code></p>
+              <p class="text-sm text-secondary">Modern look with high contrast. Great for bold images.</p>
+            </div>
+
+            <div class="card">
+              <h3>STANDARD</h3>
+              <p><code>@%#*+=-:. </code></p>
+              <p class="text-sm text-secondary">Classic ASCII art style. Most versatile option.</p>
+            </div>
+
+            <div class="card">
+              <h3>MINIMAL</h3>
+              <p><code>@+. </code></p>
+              <p class="text-sm text-secondary">Simple and fast. Best for high-performance needs.</p>
+            </div>
+
+            <div class="card">
+              <h3>EXTENDED</h3>
+              <p><code>70+ characters</code></p>
+              <p class="text-sm text-secondary">Maximum detail with gradual shading.</p>
+            </div>
+          </div>
+
+          <div class="demo-box">
+            <button class="btn btn-primary" onclick="compareCharsets()">Compare All Character Sets</button>
+            <div id="charsetComparison" style="margin-top: 20px;"></div>
+          </div>
+        </section>
+
+        <!-- Game Graphics -->
+        <section id="games" class="mb-4">
+          <h2><i class="ri-gamepad-line"></i> Retro Game Graphics</h2>
+          <p>Use ASCII art for retro-style game graphics and UI elements.</p>
+
+          <div class="card">
+            <h3>Example: Animated Sprite</h3>
+            <div class="demo-output" id="gameDemo" style="min-height: 200px;">
+              <!-- Game demo will appear here -->
+            </div>
+            <div style="margin-top: 1rem; display: flex; gap: 8px;">
+              <button class="btn btn-primary" onclick="startGameDemo()"><i class="ri-play-fill"></i> Start Animation</button>
+              <button class="btn btn-secondary" onclick="stopGameDemo()"><i class="ri-stop-fill"></i> Stop</button>
+            </div>
+          </div>
+
+          <div class="card mt-2" style="background: var(--bg-secondary);">
+            <strong>Use Cases:</strong> Roguelikes, terminal games, retro aesthetics, loading screens, decorative elements.
+          </div>
+        </section>
+
+        <!-- Animation -->
+        <section id="animation" class="mb-4">
+          <h2><i class="ri-movie-line"></i> Animated ASCII</h2>
+          <p>Create smooth animations by updating ASCII art in real-time.</p>
+
+          <div class="demo-box">
+            <div class="demo-output" id="animationOutput" style="min-height: 300px;">
+              <p style="color: #666; text-align: center; padding: 40px;">Animation will appear here</p>
+            </div>
+            <div style="margin-top: 1rem; display: flex; gap: 8px;">
+               <button class="btn btn-primary" onclick="startAnimation()"><i class="ri-play-fill"></i> Start Animation</button>
+               <button class="btn btn-secondary" onclick="stopAnimation()"><i class="ri-stop-fill"></i> Stop</button>
+            </div>
+          </div>
+
+          <details class="card" style="cursor: pointer;">
+            <summary style="font-weight: 600; padding: 10px;">View Source Code</summary>
+            <pre style="margin-top: 20px;"><code>import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+const generator = new AsciiGenerator({
+  charset: CharsetPreset.STANDARD,
+  width: 60
+});
+
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 400;
+canvas.height = 400;
+
+let frame = 0;
+
+function animate() {
+  // Draw animated content
+  ctx.clearRect(0, 0, 400, 400);
+  ctx.fillStyle = `hsl(${frame}, 70%, 50%)`;
+  ctx.beginPath();
+  ctx.arc(200 + Math.sin(frame * 0.05) * 100, 200, 80, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Convert to ASCII
+  const result = generator.convertImage(canvas);
+  document.getElementById('output').innerHTML = result.html;
+
+  frame++;
+  requestAnimationFrame(animate);
+}
+
+animate();</code></pre>
+          </details>
+        </section>
+
+        <!-- Performance -->
+        <section id="performance" class="mb-4">
+          <h2><i class="ri-speed-up-line"></i> Performance Optimization</h2>
+
+          <div class="card mb-4">
+            <h3>Best Practices</h3>
+            <ul style="padding-left: 20px; color: var(--text-secondary);">
+              <li>Use lower width values (40-80) for real-time video</li>
+              <li>Disable colors for maximum performance</li>
+              <li>Reuse generator instances</li>
+              <li>Use MINIMAL charset for fastest processing</li>
+              <li>Consider Web Workers for heavy processing</li>
+            </ul>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Configuration</th>
+                  <th>Processing Time</th>
+                  <th>Video FPS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Width 40, MINIMAL, no color</td>
+                  <td>~5ms</td>
+                  <td>60+ FPS</td>
+                </tr>
+                <tr>
+                  <td>Width 80, STANDARD, no color</td>
+                  <td>~12ms</td>
+                  <td>40-60 FPS</td>
+                </tr>
+                <tr>
+                  <td>Width 100, BLOCK, colored</td>
+                  <td>~25ms</td>
+                  <td>30-40 FPS</td>
+                </tr>
+                <tr>
+                  <td>Width 150, EXTENDED, colored</td>
+                  <td>~45ms</td>
+                  <td>20-25 FPS</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- More Resources -->
+        <section class="mb-4">
+          <div class="card" style="text-align: center; background: linear-gradient(135deg, var(--gray-900) 0%, var(--primary-dark) 100%); color: white; padding: 60px 40px;">
+            <h2 style="color: white; margin-top: 0;">Want to Build Something Amazing?</h2>
+            <p style="color: rgba(255,255,255,0.9);">Check out the full API documentation and start creating!</p>
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 2rem;">
+              <a href="api.html" class="btn btn-lg btn-primary"><i class="ri-book-open-line"></i> API Reference</a>
+              <a href="security.html" class="btn btn-lg btn-secondary" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: white;"><i class="ri-shield-check-line"></i> Security Guide</a>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+          <div style="font-size: 0.875rem; display: flex; gap: 1.5rem; justify-content: center; align-items: center;">
+             <span>&copy; 2026 ts-ascii-engine</span>
+             <a href="https://github.com/yourusername/ts-ascii-engine" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+               <i class="ri-github-fill"></i> GitHub
+             </a>
+             <a href="security.html" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+               <i class="ri-shield-check-line"></i> Security
+             </a>
+             <a href="#" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                <i class="ri-file-text-line"></i> License
+             </a>
+          </div>
+          <div class="footer-attribution">
+            Built with <i class="ri-heart-fill heart-icon"></i> by <a href="https://github.com/mofirojean" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">Mofiro Jean</a>
+          </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/examples.js"></script>
+  <script>
+    // Add active class to sidebar links on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.pageYOffset >= sectionTop - 150) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+
+  <!-- Mobile Menu Overlay -->
+  <div id="mobileMenuBackdrop" class="mobile-menu-backdrop"></div>
+  <div id="mobileMenu" class="mobile-menu">
+    <div class="mobile-menu-header">
+      <span class="logo"><i class="ri-artboard-2-line"></i> Menu</span>
+      <button id="closeMobileMenu" class="mobile-menu-btn" aria-label="Close menu">
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+    <nav class="mobile-nav-links">
+      <a href="index.html" class="nav-link"><i class="ri-home-line"></i> Home</a>
+      <a href="api.html" class="nav-link"><i class="ri-book-open-line"></i> API</a>
+      <a href="examples.html" class="nav-link active"><i class="ri-code-s-slash-line"></i> Examples</a>
+      <a href="security.html" class="nav-link"><i class="ri-shield-check-line"></i> Security</a>
+      <a href="https://github.com/yourusername/ts-ascii-engine" class="nav-link"><i class="ri-github-line"></i> GitHub</a>
+    </nav>
+  </div>
+</body>
+</html>
