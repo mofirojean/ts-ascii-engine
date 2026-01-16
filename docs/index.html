@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="High-performance TypeScript library for converting images, video, and text into ASCII art"
+    />
+    <title>ts-ascii-engine - Documentation</title>
+    
+    <!-- Path Fix (Must be inline to run before 404s happen) -->
+    <script>
+      (function() {
+        var path = window.location.pathname;
+        if (path.endsWith("/docs")) {
+           window.location.replace(path + "/");
+        }
+      })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Remix Icon -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <!-- UI Logic (Theme, Mobile) -->
+    <script src="js/ui.js"></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <div class="header-inner">
+          <a href="index.html" class="logo">
+            <i class="ri-artboard-2-line"></i> ts-ascii-engine
+          </a>
+          <nav class="nav">
+            <a href="index.html" class="nav-link active"><i class="ri-home-line"></i> Home</a>
+            <a href="api.html" class="nav-link"><i class="ri-book-open-line"></i> API</a>
+            <a href="examples.html" class="nav-link"><i class="ri-code-s-slash-line"></i> Examples</a>
+            <a href="security.html" class="nav-link"><i class="ri-shield-check-line"></i> Security</a>
+            <a
+              href="https://github.com/yourusername/ts-ascii-engine"
+              class="nav-link"
+              ><i class="ri-github-line"></i> GitHub</a
+            >
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+              <i class="ri-moon-line"></i>
+            </button>
+          </nav>
+          
+          <!-- Mobile Menu Button -->
+          <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open menu">
+            <i class="ri-menu-4-line"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <h1 class="hero-title animate-enter-up">High-Performance ASCII Conversion</h1>
+            <p class="hero-subtitle animate-enter-up delay-100">
+              A zero-dependency TypeScript library for converting images, video,
+              and text into ASCII art. Optimized for performance and
+              flexibility.
+            </p>
+
+            <div class="hero-badges animate-enter-up delay-200">
+              <span class="badge"><i class="ri-flashlight-line"></i> Zero Dependencies</span>
+              <span class="badge"><i class="ri-leaf-line"></i> Tree-Shakable</span>
+              <span class="badge"><i class="ri-code-box-line"></i> TypeScript</span>
+              <span class="badge"><i class="ri-shield-check-line"></i> Secure</span>
+            </div>
+
+            <div class="primary-actions animate-enter-up delay-300">
+              <a href="#quick-start" class="btn btn-primary btn-lg"
+                ><i class="ri-rocket-line"></i> Get Started</a
+              >
+              <a href="examples.html" class="btn btn-secondary btn-lg"
+                ><i class="ri-play-circle-line"></i> View Examples</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="container">
+        <!-- Quick Start -->
+        <section id="quick-start" class="mb-4">
+          <h2>Quick Start</h2>
+          <div class="card">
+            <h3><i class="ri-download-cloud-2-line"></i> Installation</h3>
+            <pre><code>npm install ts-ascii-engine</code></pre>
+
+            <h3><i class="ri-code-s-line"></i> Basic Usage</h3>
+            <pre><code>import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+// Create generator
+const generator = new AsciiGenerator({
+  charset: CharsetPreset.BLOCK,
+  width: 100,
+  colored: true
+});
+
+// Convert image
+const img = document.querySelector('img');
+const result = generator.convertImage(img);
+
+// Display result
+document.getElementById('output').innerHTML = result.html;</code></pre>
+          </div>
+        </section>
+
+        <!-- Live Demo -->
+        <section class="mb-4">
+          <h2>Interactive Demo</h2>
+          <div class="demo-box">
+            <div class="demo-header">
+              <h3><i class="ri-magic-line"></i> Try it yourself</h3>
+              <p class="mb-0">
+                Upload an image or generate a sample to see ASCII conversion in
+                action.
+              </p>
+            </div>
+
+            <div class="demo-content">
+              <div class="demo-controls">
+                <div class="control-group">
+                  <label class="control-label">Upload Image</label>
+                  <label class="btn btn-secondary" style="cursor: pointer; justify-content: flex-start; text-align: center;">
+                      <i class="ri-upload-2-line"></i> Choose File
+                      <input
+                        type="file"
+                        id="imageUpload"
+                        accept="image/*"
+                        style="display: none;"
+                      />
+                  </label>
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label">Sample Images</label>
+                  <div style="display: flex; gap: 8px">
+                    <button
+                      class="btn btn-secondary btn-sm"
+                      onclick="loadSample('landscape')"
+                      style="flex: 1;"
+                    >
+                      <i class="ri-landscape-line"></i> Landscape
+                    </button>
+                    <button
+                      class="btn btn-secondary btn-sm"
+                      onclick="loadSample('portrait')"
+                      style="flex: 1;"
+                    >
+                      <i class="ri-user-smile-line"></i> Portrait
+                    </button>
+                    <button
+                      class="btn btn-secondary btn-sm"
+                      onclick="loadSample('pattern')"
+                      style="flex: 1;"
+                    >
+                      <i class="ri-grid-line"></i> Pattern
+                    </button>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <label for="charset" class="control-label"
+                    >Character Set</label
+                  >
+                  <select
+                    id="charset"
+                    onchange="updateDemo()"
+                    class="form-control"
+                  >
+                    <option value="BLOCK">Block</option>
+                    <option value="STANDARD" selected>Standard</option>
+                    <option value="MINIMAL">Minimal</option>
+                    <option value="EXTENDED">Extended</option>
+                  </select>
+                </div>
+
+                <div class="control-group">
+                  <label for="width" class="control-label"
+                    >Width: <span id="widthValue">100</span> chars</label
+                  >
+                  <input
+                    type="range"
+                    id="width"
+                    min="20"
+                    max="200"
+                    value="100"
+                    oninput="updateWidth(this.value)"
+                    style="width: 100%"
+                  />
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label">Options</label>
+                  <div style="display: flex; gap: 16px; align-items: center">
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                      <input
+                        type="checkbox"
+                        id="colored"
+                        onchange="updateDemo()"
+                      />
+                      <span>Colored</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                      <input
+                        type="checkbox"
+                        id="inverted"
+                        onchange="updateDemo()"
+                      />
+                      <span>Inverted</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-output" id="output">
+                <div style="text-align: center; color: var(--text-muted)">
+                   <i class="ri-image-add-line" style="font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.5;"></i>
+                   Upload an image or click a sample button to start
+                </div>
+              </div>
+
+              <div
+                style="
+                  margin-top: 1rem;
+                  font-size: 0.875rem;
+                  color: var(--text-muted);
+                  display: flex;
+                  gap: 1rem;
+                  justify-content: center;
+                "
+              >
+                <span
+                  ><strong><i class="ri-timer-flash-line"></i> Time:</strong>
+                  <span id="processingTime">-</span>ms</span
+                >
+                <span
+                  ><strong><i class="ri-aspect-ratio-line"></i> Dimensions:</strong>
+                  <span id="dimensions">-</span></span
+                >
+                <span
+                  ><strong><i class="ri-text-spacing"></i> Chars:</strong> <span id="charCount">-</span></span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Features -->
+        <section class="mb-4">
+          <h2>Features</h2>
+          <div class="card-grid">
+            <div class="card feature-card">
+              <div class="feature-icon"><i class="ri-flashlight-line"></i></div>
+              <h3>Zero Dependencies</h3>
+              <p>
+                Pure TypeScript implementation with no external libraries.
+                Lightweight and fast.
+              </p>
+            </div>
+
+            <div class="card feature-card">
+              <div class="feature-icon"><i class="ri-code-box-line"></i></div>
+              <h3>Full TypeScript</h3>
+              <p>
+                Complete type definitions and IntelliSense support for the best
+                developer experience.
+              </p>
+            </div>
+
+            <div class="card feature-card">
+              <div class="feature-icon"><i class="ri-speed-up-line"></i></div>
+              <h3>High Performance</h3>
+              <p>
+                Optimized with typed arrays and minimal garbage collection.
+                Process video at 30+ FPS.
+              </p>
+            </div>
+
+            <div class="card feature-card">
+              <div class="feature-icon"><i class="ri-palette-line"></i></div>
+              <h3>Color Support</h3>
+              <p>
+                Preserve original colors in ASCII output for stunning visual
+                effects.
+              </p>
+            </div>
+
+            <div class="card feature-card">
+              <div class="feature-icon"><i class="ri-vidicon-line"></i></div>
+              <h3>Real-time Video</h3>
+              <p>
+                Convert webcam streams and video elements in real-time with
+                smooth performance.
+              </p>
+            </div>
+
+            <div class="card feature-card">
+              <div class="feature-icon"><i class="ri-shield-check-line"></i></div>
+              <h3>Secure by Design</h3>
+              <p>
+                Built-in input validation and sanitization to prevent common web
+                vulnerabilities.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-content">
+          <div style="font-size: 0.875rem; display: flex; gap: 1.5rem; justify-content: center; align-items: center;">
+             <span>&copy; 2026 ts-ascii-engine</span>
+             <a href="https://github.com/yourusername/ts-ascii-engine" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+               <i class="ri-github-fill"></i> GitHub
+             </a>
+             <a href="security.html" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+               <i class="ri-shield-check-line"></i> Security
+             </a>
+             <a href="#" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                <i class="ri-file-text-line"></i> License
+             </a>
+          </div>
+          <div class="footer-attribution">
+            Built with <i class="ri-heart-fill heart-icon"></i> by <a href="https://github.com/mofirojean" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">Mofiro Jean</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuBackdrop" class="mobile-menu-backdrop"></div>
+    <div id="mobileMenu" class="mobile-menu">
+      <div class="mobile-menu-header">
+        <span class="logo"><i class="ri-artboard-2-line"></i> Menu</span>
+        <button id="closeMobileMenu" class="mobile-menu-btn" aria-label="Close menu">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="index.html" class="nav-link active"><i class="ri-home-line"></i> Home</a>
+        <a href="api.html" class="nav-link"><i class="ri-book-open-line"></i> API</a>
+        <a href="examples.html" class="nav-link"><i class="ri-code-s-slash-line"></i> Examples</a>
+        <a href="security.html" class="nav-link"><i class="ri-shield-check-line"></i> Security</a>
+        <a href="https://github.com/yourusername/ts-ascii-engine" class="nav-link"><i class="ri-github-line"></i> GitHub</a>
+      </nav>
+    </div>
+  </body>
+</html>
