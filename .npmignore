@@ -1,0 +1,36 @@
+# Source files
+src/
+tsconfig.json
+tsconfig.esm.json
+
+# Examples
+examples/
+
+# Tests
+test-build.js
+*.test.ts
+*.spec.ts
+
+# Development files
+.vscode/
+.idea/
+*.log
+.DS_Store
+
+# Build artifacts
+dist-esm/
+*.tsbuildinfo
+
+# Git
+.git/
+.gitignore
+
+# Documentation (keep README and LICENSE)
+ARCHITECTURE.md
+PROJECT_SUMMARY.md
+QUICK_START.md
+
+# Config
+.eslintrc*
+.prettierrc*
+.editorconfig

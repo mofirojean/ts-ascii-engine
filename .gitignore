@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-esm/
+*.log
+.DS_Store
+.vscode/
+.idea/
+.claude/
+.gemini/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.tsbuildinfo
