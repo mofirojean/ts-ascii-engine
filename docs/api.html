@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complete API reference for ts-ascii-engine">
+  <title>API Reference - ts-ascii-engine</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Remix Icon -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+</head>
+  <!-- UI Logic -->
+  <script src="js/ui.js"></script>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+          <i class="ri-artboard-2-line"></i> ts-ascii-engine
+        </a>
+        <nav class="nav">
+          <a href="index.html" class="nav-link"><i class="ri-home-line"></i> Home</a>
+          <a href="api.html" class="nav-link active"><i class="ri-book-open-line"></i> API Reference</a>
+          <a href="examples.html" class="nav-link"><i class="ri-code-s-slash-line"></i> Examples</a>
+          <a href="security.html" class="nav-link"><i class="ri-shield-check-line"></i> Security</a>
+          <a href="https://github.com/yourusername/ts-ascii-engine" class="nav-link"><i class="ri-github-line"></i> GitHub</a>
+          <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+            <i class="ri-moon-line"></i>
+          </button>
+        </nav>
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open menu">
+          <i class="ri-menu-4-line"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-group">
+          <h3 class="sidebar-heading">Getting Started</h3>
+          <nav>
+            <a href="#installation" class="sidebar-link">Installation</a>
+            <a href="#quick-start" class="sidebar-link">Quick Start</a>
+          </nav>
+        </div>
+
+        <div class="sidebar-group">
+          <h3 class="sidebar-heading">Core API</h3>
+          <nav>
+            <a href="#ascii-generator" class="sidebar-link">AsciiGenerator</a>
+            <a href="#constructor" class="sidebar-link">Constructor</a>
+            <a href="#convertImage" class="sidebar-link">convertImage()</a>
+            <a href="#convertText" class="sidebar-link">convertText()</a>
+            <a href="#updateConfig" class="sidebar-link">updateConfig()</a>
+            <a href="#getConfig" class="sidebar-link">getConfig()</a>
+          </nav>
+        </div>
+
+        <div class="sidebar-group">
+          <h3 class="sidebar-heading">Types</h3>
+          <nav>
+            <a href="#AsciiConfig" class="sidebar-link">AsciiConfig</a>
+            <a href="#AsciiOutput" class="sidebar-link">AsciiOutput</a>
+            <a href="#CharsetPreset" class="sidebar-link">CharsetPreset</a>
+            <a href="#TextToAsciiOptions" class="sidebar-link">TextToAsciiOptions</a>
+          </nav>
+        </div>
+
+        <div class="sidebar-group">
+          <h3 class="sidebar-heading">Integration</h3>
+          <nav>
+            <a href="#react" class="sidebar-link">React</a>
+            <a href="#vue" class="sidebar-link">Vue</a>
+            <a href="#angular" class="sidebar-link">Angular</a>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Title -->
+        <div class="mb-4">
+          <h1>API Reference</h1>
+          <p class="text-xl text-secondary">Complete documentation for ts-ascii-engine</p>
+        </div>
+
+        <!-- Installation -->
+        <section id="installation" class="mb-4">
+          <h2>Installation</h2>
+          <pre><code>npm install ts-ascii-engine</code></pre>
+
+          <h3>Import</h3>
+          <pre><code>// ES Modules (recommended)
+import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+// CommonJS
+const { AsciiGenerator, CharsetPreset } = require('ts-ascii-engine');
+
+// TypeScript with types
+import {
+  AsciiGenerator,
+  CharsetPreset,
+  type AsciiConfig,
+  type AsciiOutput
+} from 'ts-ascii-engine';</code></pre>
+        </section>
+
+        <!-- Quick Start -->
+        <section id="quick-start" class="mb-4">
+          <h2>Quick Start</h2>
+
+          <div class="card">
+            <h3>Basic Image Conversion</h3>
+            <pre><code>import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+// Create generator
+const generator = new AsciiGenerator({
+  charset: CharsetPreset.BLOCK,
+  width: 100,
+  colored: true
+});
+
+// Convert image
+const img = document.querySelector('img');
+const result = generator.convertImage(img);
+
+// Display as HTML
+document.getElementById('output').innerHTML = result.html;
+
+// Or use raw text
+console.log(result.text);</code></pre>
+          </div>
+        </section>
+
+        <!-- AsciiGenerator Class -->
+        <section id="ascii-generator" class="mb-4">
+          <h2>AsciiGenerator</h2>
+          <p>The main class for converting images, video, and text into ASCII art.</p>
+
+          <!-- Constructor -->
+          <div id="constructor" class="card mb-4">
+            <h3>Constructor</h3>
+            <pre><code>constructor(config?: AsciiConfig)</code></pre>
+
+            <p><strong>Parameters:</strong></p>
+            <ul>
+              <li><code>config</code> (optional) - Configuration object for the generator</li>
+            </ul>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>const generator = new AsciiGenerator({
+  charset: CharsetPreset.BLOCK,
+  width: 100,
+  colored: true,
+  aspectRatio: 0.55
+});</code></pre>
+          </div>
+
+          <!-- convertImage -->
+          <div id="convertImage" class="card mb-4">
+            <h3>convertImage()</h3>
+            <pre><code>convertImage(source: ImageSource): AsciiOutput</code></pre>
+
+            <p>Converts an image source to ASCII art.</p>
+
+            <p><strong>Parameters:</strong></p>
+            <ul>
+              <li><code>source</code> - Image, video, canvas, or ImageData to convert</li>
+            </ul>
+
+            <p><strong>Returns:</strong> <code>AsciiOutput</code> object with text, HTML, and metadata</p>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>// From image element
+const img = document.querySelector('img');
+const result = generator.convertImage(img);
+
+// From video element
+const video = document.querySelector('video');
+const result = generator.convertImage(video);
+
+// From canvas
+const canvas = document.querySelector('canvas');
+const result = generator.convertImage(canvas);</code></pre>
+          </div>
+
+          <!-- convertText -->
+          <div id="convertText" class="card mb-4">
+            <h3>convertText()</h3>
+            <pre><code>convertText(text: string, options?: TextToAsciiOptions): AsciiOutput</code></pre>
+
+            <p>Converts text into ASCII art using specified font.</p>
+
+            <p><strong>Parameters:</strong></p>
+            <ul>
+              <li><code>text</code> - String to convert</li>
+              <li><code>options</code> (optional) - Font and rendering options</li>
+            </ul>
+
+            <p><strong>Returns:</strong> <code>AsciiOutput</code> object</p>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>// Simple text banner
+const result = generator.convertText('HELLO');
+
+// Custom font
+const result = generator.convertText('ASCII', {
+  font: 'Impact',
+  fontSize: 80,
+  fontWeight: 'bold'
+});</code></pre>
+          </div>
+
+          <!-- updateConfig -->
+          <div id="updateConfig" class="card mb-4">
+            <h3>updateConfig()</h3>
+            <pre><code>updateConfig(config: Partial&lt;AsciiConfig&gt;): void</code></pre>
+
+            <p>Updates configuration dynamically without creating a new instance.</p>
+
+            <p><strong>Parameters:</strong></p>
+            <ul>
+              <li><code>config</code> - Partial configuration to update</li>
+            </ul>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>// Update single property
+generator.updateConfig({ width: 120 });
+
+// Update multiple properties
+generator.updateConfig({
+  charset: CharsetPreset.BLOCK,
+  colored: true,
+  width: 100
+});</code></pre>
+          </div>
+
+          <!-- getConfig -->
+          <div id="getConfig" class="card mb-4">
+            <h3>getConfig()</h3>
+            <pre><code>getConfig(): Readonly&lt;Required&lt;AsciiConfig&gt;&gt;</code></pre>
+
+            <p>Returns the current configuration (read-only copy).</p>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>const config = generator.getConfig();
+console.log(`Current width: ${config.width}`);</code></pre>
+          </div>
+        </section>
+
+        <!-- Type Definitions -->
+        <section id="types" class="mb-4">
+          <h2>Type Definitions</h2>
+
+          <!-- AsciiConfig -->
+          <div id="AsciiConfig" class="card mb-4">
+            <h3>AsciiConfig</h3>
+            <p>Configuration options for the ASCII generator.</p>
+
+            <pre><code>interface AsciiConfig {
+  charset?: CharsetPreset | string;
+  inverted?: boolean;
+  colored?: boolean;
+  aspectRatio?: number;
+  width?: number;
+  height?: number;
+  optimized?: boolean;
+}</code></pre>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Default</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>charset</code></td>
+                  <td>CharsetPreset | string</td>
+                  <td>STANDARD</td>
+                  <td>Character set for rendering (dark to light)</td>
+                </tr>
+                <tr>
+                  <td><code>inverted</code></td>
+                  <td>boolean</td>
+                  <td>false</td>
+                  <td>Invert brightness mapping</td>
+                </tr>
+                <tr>
+                  <td><code>colored</code></td>
+                  <td>boolean</td>
+                  <td>false</td>
+                  <td>Include color information in output</td>
+                </tr>
+                <tr>
+                  <td><code>aspectRatio</code></td>
+                  <td>number</td>
+                  <td>0.55</td>
+                  <td>Font aspect ratio correction (0.45-0.65)</td>
+                </tr>
+                <tr>
+                  <td><code>width</code></td>
+                  <td>number</td>
+                  <td>0 (auto)</td>
+                  <td>Target width in characters</td>
+                </tr>
+                <tr>
+                  <td><code>height</code></td>
+                  <td>number</td>
+                  <td>0 (auto)</td>
+                  <td>Target height in characters</td>
+                </tr>
+                <tr>
+                  <td><code>optimized</code></td>
+                  <td>boolean</td>
+                  <td>true</td>
+                  <td>Enable performance optimizations</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- AsciiOutput -->
+          <div id="AsciiOutput" class="card mb-4">
+            <h3>AsciiOutput</h3>
+            <p>The result object returned by conversion methods.</p>
+
+            <pre><code>interface AsciiOutput {
+  text: string;
+  html: string;
+  characters: string[][];
+  colors?: CharColor[][];
+  metadata: AsciiMetadata;
+}</code></pre>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>text</code></td>
+                  <td>string</td>
+                  <td>Raw ASCII text (newline-separated rows)</td>
+                </tr>
+                <tr>
+                  <td><code>html</code></td>
+                  <td>string</td>
+                  <td>HTML string with optional color styling</td>
+                </tr>
+                <tr>
+                  <td><code>characters</code></td>
+                  <td>string[][]</td>
+                  <td>2D array of characters for programmatic access</td>
+                </tr>
+                <tr>
+                  <td><code>colors</code></td>
+                  <td>CharColor[][]</td>
+                  <td>2D array of color data (if colored: true)</td>
+                </tr>
+                <tr>
+                  <td><code>metadata</code></td>
+                  <td>AsciiMetadata</td>
+                  <td>Processing information and statistics</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p><strong>Example:</strong></p>
+            <pre><code>const result = generator.convertImage(img);
+
+// Display as text
+console.log(result.text);
+
+// Display as HTML
+document.body.innerHTML = result.html;
+
+// Access individual characters
+const topLeftChar = result.characters[0][0];
+
+// Access color data
+if (result.colors) {
+  const color = result.colors[0][0];
+  console.log(`RGB: ${color.r}, ${color.g}, ${color.b}`);
+}</code></pre>
+          </div>
+
+          <!-- CharsetPreset -->
+          <div id="CharsetPreset" class="card mb-4">
+            <h3>CharsetPreset</h3>
+            <p>Built-in character set presets.</p>
+
+            <pre><code>enum CharsetPreset {
+  BLOCK = 'BLOCK',
+  STANDARD = 'STANDARD',
+  MINIMAL = 'MINIMAL',
+  EXTENDED = 'EXTENDED',
+  CUSTOM = 'CUSTOM'
+}</code></pre>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Preset</th>
+                  <th>Characters</th>
+                  <th>Count</th>
+                  <th>Best For</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>BLOCK</code></td>
+                  <td>██▓▒░ </td>
+                  <td>6</td>
+                  <td>Modern look, high contrast</td>
+                </tr>
+                <tr>
+                  <td><code>STANDARD</code></td>
+                  <td>@%#*+=-:. </td>
+                  <td>10</td>
+                  <td>Classic ASCII art</td>
+                </tr>
+                <tr>
+                  <td><code>MINIMAL</code></td>
+                  <td>@+. </td>
+                  <td>4</td>
+                  <td>Simple, fast processing</td>
+                </tr>
+                <tr>
+                  <td><code>EXTENDED</code></td>
+                  <td>70+ chars</td>
+                  <td>70+</td>
+                  <td>Maximum detail</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p><strong>Custom Charset Example:</strong></p>
+            <pre><code>// Use custom characters (dark to light order)
+const generator = new AsciiGenerator({
+  charset: '█▓▒░ '
+});</code></pre>
+          </div>
+
+          <!-- TextToAsciiOptions -->
+          <div id="TextToAsciiOptions" class="card mb-4">
+            <h3>TextToAsciiOptions</h3>
+            <p>Options for text-to-ASCII conversion.</p>
+
+            <pre><code>interface TextToAsciiOptions {
+  font?: string;
+  fontSize?: number;
+  fontWeight?: string | number;
+  fontStyle?: string;
+  color?: string;
+  backgroundColor?: string;
+  padding?: number;
+}</code></pre>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Default</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>font</code></td>
+                  <td>string</td>
+                  <td>'Arial'</td>
+                  <td>Font family to render text with</td>
+                </tr>
+                <tr>
+                  <td><code>fontSize</code></td>
+                  <td>number</td>
+                  <td>48</td>
+                  <td>Font size in pixels (1-1000)</td>
+                </tr>
+                <tr>
+                  <td><code>fontWeight</code></td>
+                  <td>string | number</td>
+                  <td>'normal'</td>
+                  <td>Font weight</td>
+                </tr>
+                <tr>
+                  <td><code>fontStyle</code></td>
+                  <td>string</td>
+                  <td>'normal'</td>
+                  <td>Font style (normal, italic, oblique)</td>
+                </tr>
+                <tr>
+                  <td><code>color</code></td>
+                  <td>string</td>
+                  <td>'#000000'</td>
+                  <td>Text color for rendering</td>
+                </tr>
+                <tr>
+                  <td><code>backgroundColor</code></td>
+                  <td>string</td>
+                  <td>'#ffffff'</td>
+                  <td>Background color for rendering</td>
+                </tr>
+                <tr>
+                  <td><code>padding</code></td>
+                  <td>number</td>
+                  <td>10</td>
+                  <td>Padding around text in pixels</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Framework Integration -->
+        <section id="integration" class="mb-4">
+          <h2>Framework Integration</h2>
+
+          <!-- React -->
+          <div id="react" class="card mb-4">
+            <h3>React Integration</h3>
+            <pre><code>import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+import { useEffect, useRef, useState } from 'react';
+
+function AsciiImage({ src }) {
+  const [html, setHtml] = useState('');
+  const generatorRef = useRef(new AsciiGenerator({
+    charset: CharsetPreset.BLOCK,
+    width: 100,
+    colored: true
+  }));
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      const result = generatorRef.current.convertImage(img);
+      setHtml(result.html);
+    };
+    img.src = src;
+  }, [src]);
+
+  return &lt;div dangerouslySetInnerHTML={{ __html: html }} /&gt;;
+}
+
+// Usage
+&lt;AsciiImage src="/path/to/image.jpg" /&gt;</code></pre>
+          </div>
+
+          <!-- Vue -->
+          <div id="vue" class="card mb-4">
+            <h3>Vue 3 Integration</h3>
+            <pre><code>&lt;template&gt;
+  &lt;div v-html="asciiHtml"&gt;&lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref, watch } from 'vue';
+import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+const props = defineProps(['src']);
+const asciiHtml = ref('');
+
+const generator = new AsciiGenerator({
+  charset: CharsetPreset.STANDARD,
+  width: 80
+});
+
+watch(() => props.src, (src) => {
+  const img = new Image();
+  img.onload = () => {
+    const result = generator.convertImage(img);
+    asciiHtml.value = result.html;
+  };
+  img.src = src;
+}, { immediate: true });
+&lt;/script&gt;</code></pre>
+          </div>
+
+          <!-- Angular -->
+          <div id="angular" class="card mb-4">
+            <h3>Angular Integration</h3>
+            <pre><code>// ascii.service.ts
+import { Injectable } from '@angular/core';
+import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+@Injectable({ providedIn: 'root' })
+export class AsciiService {
+  private generator = new AsciiGenerator({
+    charset: CharsetPreset.STANDARD,
+    width: 100
+  });
+
+  convertImage(source: HTMLImageElement) {
+    return this.generator.convertImage(source);
+  }
+
+  updateConfig(config) {
+    this.generator.updateConfig(config);
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Best Practices -->
+        <section class="mb-4">
+          <h2>Best Practices</h2>
+
+          <div class="card" style="background:var(--bg-secondary);">
+            <strong>Performance Tip:</strong> Reuse generator instances and update config instead of creating new instances.
+          </div>
+
+          <div class="card mt-2">
+            <h3>Reuse Instances</h3>
+            <pre><code>// Good: Create once, update config
+const generator = new AsciiGenerator();
+generator.updateConfig({ width: 100 });
+// ... later
+generator.updateConfig({ width: 120 });
+
+// Bad: Creating new instances
+const gen1 = new AsciiGenerator({ width: 100 });
+const gen2 = new AsciiGenerator({ width: 120 });</code></pre>
+          </div>
+
+          <div class="card mt-2">
+            <h3>Choose Appropriate Width</h3>
+            <pre><code>// Mobile/thumbnails: 40-60
+const mobileGen = new AsciiGenerator({ width: 50 });
+
+// Desktop/detail: 80-120
+const desktopGen = new AsciiGenerator({ width: 100 });
+
+// High detail/print: 150-200
+const printGen = new AsciiGenerator({ width: 180 });</code></pre>
+          </div>
+
+          <div class="card mt-2">
+            <h3>Handle CORS Properly</h3>
+            <pre><code>// Correct: Set crossOrigin
+const img = new Image();
+img.crossOrigin = 'anonymous';
+img.src = 'https://external-domain.com/image.jpg';</code></pre>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+          <div style="font-size: 0.875rem; display: flex; gap: 1.5rem; justify-content: center; align-items: center;">
+             <span>&copy; 2026 ts-ascii-engine</span>
+             <a href="https://github.com/yourusername/ts-ascii-engine" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+               <i class="ri-github-fill"></i> GitHub
+             </a>
+             <a href="security.html" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+               <i class="ri-shield-check-line"></i> Security
+             </a>
+             <a href="#" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                <i class="ri-file-text-line"></i> License
+             </a>
+          </div>
+          <div class="footer-attribution">
+            Built with <i class="ri-heart-fill heart-icon"></i> by <a href="https://github.com/mofirojean" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">Mofiro Jean</a>
+          </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Add active class to sidebar links on scroll
+    const sections = document.querySelectorAll('section[id], div[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.pageYOffset >= sectionTop - 150) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuBackdrop" class="mobile-menu-backdrop"></div>
+    <div id="mobileMenu" class="mobile-menu">
+      <div class="mobile-menu-header">
+        <span class="logo"><i class="ri-artboard-2-line"></i> Menu</span>
+        <button id="closeMobileMenu" class="mobile-menu-btn" aria-label="Close menu">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="index.html" class="nav-link"><i class="ri-home-line"></i> Home</a>
+        <a href="api.html" class="nav-link active"><i class="ri-book-open-line"></i> API Reference</a>
+        <a href="examples.html" class="nav-link"><i class="ri-code-s-slash-line"></i> Examples</a>
+        <a href="security.html" class="nav-link"><i class="ri-shield-check-line"></i> Security</a>
+        <a href="https://github.com/yourusername/ts-ascii-engine" class="nav-link"><i class="ri-github-line"></i> GitHub</a>
+      </nav>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Security best practices for ts-ascii-engine"
+    />
+    <title>Security - ts-ascii-engine</title>
+    <!-- Path Fix (Must be inline to run before 404s happen) -->
+    <script>
+      (function() {
+        var path = window.location.pathname;
+        if (path.endsWith("/docs")) {
+           window.location.replace(path + "/");
+        }
+      })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Remix Icon -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <!-- UI Logic -->
+    <script src="js/ui.js"></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <div class="header-inner">
+          <a href="index.html" class="logo">
+             <i class="ri-artboard-2-line"></i> ts-ascii-engine 
+          </a>
+          <nav class="nav">
+            <a href="index.html" class="nav-link"><i class="ri-home-line"></i> Home</a>
+            <a href="api.html" class="nav-link"><i class="ri-book-open-line"></i> API Reference</a>
+            <a href="examples.html" class="nav-link"><i class="ri-code-s-slash-line"></i> Examples</a>
+            <a href="security.html" class="nav-link active"><i class="ri-shield-check-line"></i> Security</a>
+            <a
+              href="https://github.com/yourusername/ts-ascii-engine"
+              class="nav-link"
+              ><i class="ri-github-line"></i> GitHub</a
+            >
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+              <i class="ri-moon-line"></i>
+            </button>
+          </nav>
+          <!-- Mobile Menu Button -->
+          <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open menu">
+            <i class="ri-menu-4-line"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="docs-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar-group">
+            <h3 class="sidebar-heading">Overview</h3>
+            <nav>
+              <a href="#introduction" class="sidebar-link"><i class="ri-information-line"></i> Introduction</a>
+              <a href="#protections" class="sidebar-link"><i class="ri-shield-keyhole-line"></i> Built-in Protections</a>
+            </nav>
+          </div>
+
+          <div class="sidebar-group">
+            <h3 class="sidebar-heading">Best Practices</h3>
+            <nav>
+              <a href="#charsets" class="sidebar-link"><i class="ri-text-spacing"></i> Charset Sanitization</a>
+              <a href="#dimensions" class="sidebar-link"><i class="ri-aspect-ratio-line"></i> Input Limits</a>
+              <a href="#csp" class="sidebar-link"><i class="ri-lock-line"></i> Content Security Policy</a>
+              <a href="#cors" class="sidebar-link"><i class="ri-global-line"></i> CORS Handling</a>
+            </nav>
+          </div>
+
+          <div class="sidebar-group">
+            <h3 class="sidebar-heading">Examples</h3>
+            <nav>
+              <a href="#secure-implementation" class="sidebar-link"><i class="ri-code-box-line"></i> Secure Implementation</a>
+              <a href="#checklist" class="sidebar-link"><i class="ri-checkbox-line"></i> Security Checklist</a>
+            </nav>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+          <!-- Hero -->
+          <div class="mb-4">
+            <h1>Security Guide</h1>
+            <p class="text-xl text-secondary">Best practices for secure implementation</p>
+          </div>
+
+          <!-- Introduction -->
+          <section id="introduction" class="mb-4">
+            <h2>Introduction</h2>
+
+            <div class="alert alert-warning">
+              <strong><i class="ri-alert-line"></i> Important:</strong> While ts-ascii-engine has built-in
+              security measures, proper integration requires following security
+              best practices outlined in this guide.
+            </div>
+
+            <p>
+              ts-ascii-engine processes user input and generates HTML output,
+              which requires careful handling to maintain security in your
+              applications. This guide covers the security measures implemented in
+              the library and best practices for secure integration.
+            </p>
+          </section>
+
+          <!-- Built-in Protections -->
+          <section id="protections" class="mb-4">
+            <h2>Built-in Security Protections</h2>
+
+            <div class="card mb-4">
+              <h3>Charset Sanitization</h3>
+              <p>
+                Custom charset strings are automatically sanitized to remove
+                dangerous characters:
+              </p>
+              <ul>
+                <li>
+                  Characters removed: <code>&lt;</code>, <code>&gt;</code>,
+                  <code>'</code>, <code>"</code>, <code>&amp;</code>,
+                  <code>`</code>
+                </li>
+                <li>Prevents XSS via charset injection</li>
+                <li>Automatic, no user action required</li>
+              </ul>
+
+              <pre><code class="language-typescript">// Dangerous characters automatically removed
+const generator = new AsciiGenerator({
+  charset: '&lt;script&gt;alert("XSS")&lt;/script&gt;'
+});
+// Resulting charset: 'scriptalert("XSS")/script'</code></pre>
+            </div>
+
+            <div class="card mb-4">
+              <h3>Dimension Limits</h3>
+              <p>
+                Maximum limits enforced to prevent memory exhaustion (DoS
+                attacks):
+              </p>
+              <ul>
+                <li><strong>Max width/height:</strong> 10,000 characters</li>
+                <li>
+                  <strong>Max total characters:</strong> 25,000,000 (5000×5000)
+                </li>
+                <li>Throws error if exceeded</li>
+              </ul>
+
+              <pre><code class="language-typescript">// Throws error - exceeds maximum
+const generator = new AsciiGenerator({
+  width: 1000000
+});
+// Error: Width exceeds maximum allowed (10000)</code></pre>
+            </div>
+
+            <div class="card mb-4">
+              <h3>HTML Escaping</h3>
+              <p>All character output is properly HTML-escaped:</p>
+              <ul>
+                <li>
+                  Escapes: <code>&amp;</code>, <code>&lt;</code>,
+                  <code>&gt;</code>, <code>"</code>, <code>'</code>,
+                  <code>`</code>
+                </li>
+                <li>Prevents XSS in HTML output</li>
+                <li>Automatic for all conversions</li>
+              </ul>
+            </div>
+
+            <div class="card mb-4">
+              <h3>Text Input Validation</h3>
+              <p>Text-to-ASCII conversion has strict limits:</p>
+              <ul>
+                <li><strong>Max text length:</strong> 10,000 characters</li>
+                <li><strong>Max font size:</strong> 1,000 pixels</li>
+                <li>Font parameters validated against whitelist</li>
+              </ul>
+            </div>
+
+            <div class="card mb-4">
+              <h3>CORS Error Handling</h3>
+              <p>Clear error messages for cross-origin image issues:</p>
+              <ul>
+                <li>Detects CORS security errors</li>
+                <li>Provides actionable error messages</li>
+                <li>Guides users to proper CORS configuration</li>
+              </ul>
+            </div>
+
+            <div class="card mb-4">
+              <h3>Array Bounds Checking</h3>
+              <p>All pixel data access is bounds-checked:</p>
+              <ul>
+                <li>Prevents out-of-bounds array access</li>
+                <li>Handles edge cases gracefully</li>
+                <li>No buffer overflows possible</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- Best Practices -->
+          <section id="charsets" class="mb-4">
+            <h2>Security Best Practices</h2>
+
+            <div class="card mb-4">
+              <h3>1. Sanitize Custom Charsets</h3>
+              <p>
+                <strong>Never pass user-controlled data directly as custom charsets:</strong>
+              </p>
+
+              <div class="grid grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                  <h4 class="text-danger"><i class="ri-close-circle-line"></i> Unsafe</h4>
+                  <pre><code class="language-typescript">const userCharset = prompt("Enter charset:");
+const generator = new AsciiGenerator({
+  charset: userCharset
+});</code></pre>
+                </div>
+
+                <div>
+                  <h4 class="text-success"><i class="ri-checkbox-circle-line"></i> Safe</h4>
+                  <pre><code class="language-typescript">function isValidCharset(charset) {
+  return /^[\w\s\.,-_]+$/.test(charset)
+    && charset.length <= 20;
+}
+
+const userCharset = prompt("Enter charset:");
+if (isValidCharset(userCharset)) {
+  const generator = new AsciiGenerator({
+    charset: userCharset
+  });
+}</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="dimensions" class="mb-4">
+            <div class="card mb-4">
+              <h3>2. Limit Input Dimensions</h3>
+              <p><strong>Set application-specific limits:</strong></p>
+
+              <pre><code class="language-typescript">// Recommended approach
+function createGenerator(userWidth) {
+  const MAX_WIDTH = 300; // Your application's limit
+  const safeWidth = Math.min(userWidth, MAX_WIDTH);
+
+  return new AsciiGenerator({ width: safeWidth });
+}</code></pre>
+
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Use Case</th>
+                      <th>Recommended Width</th>
+                      <th>Rationale</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Mobile thumbnails</td>
+                      <td>40-60</td>
+                      <td>Fast processing, low memory</td>
+                    </tr>
+                    <tr>
+                      <td>Desktop displays</td>
+                      <td>80-120</td>
+                      <td>Good balance of quality and performance</td>
+                    </tr>
+                    <tr>
+                      <td>High-quality images</td>
+                      <td>150-200</td>
+                      <td>Maximum detail for static images</td>
+                    </tr>
+                    <tr>
+                      <td>Real-time video</td>
+                      <td>60-80</td>
+                      <td>Maintains 30+ FPS</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="csp" class="mb-4">
+            <div class="card mb-4">
+              <h3>3. Use Content Security Policy (CSP)</h3>
+              <p>
+                <strong>Implement CSP headers when displaying HTML output:</strong>
+              </p>
+
+              <pre><code class="language-html">&lt;!-- Recommended CSP headers --&gt;
+&lt;meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'unsafe-inline'"&gt;</code></pre>
+
+              <div class="alert alert-info">
+                <strong><i class="ri-information-line"></i> Note:</strong> <code>'unsafe-inline'</code> is needed for
+                inline styles if using colored mode. For stricter CSP, use plain
+                text output instead.
+              </div>
+
+              <pre><code class="language-typescript">// Strictest security - use text output
+const result = generator.convertImage(img);
+document.getElementById('output').textContent = result.text;</code></pre>
+            </div>
+          </section>
+
+          <section id="cors" class="mb-4">
+            <div class="card mb-4">
+              <h3>4. Handle CORS Properly</h3>
+              <p><strong>Always set crossOrigin for external images:</strong></p>
+
+              <pre><code class="language-typescript">// Correct approach
+async function loadExternalImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous'; // Important!
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+// Usage
+try {
+  const img = await loadExternalImage('https://example.com/image.jpg');
+  const result = generator.convertImage(img);
+} catch (error) {
+  console.error('Failed to load image:', error);
+}</code></pre>
+            </div>
+          </section>
+
+          <!-- Additional Best Practices -->
+          <section class="mb-4">
+            <div class="card mb-4">
+              <h3>5. Validate Text Inputs</h3>
+              <pre><code class="language-typescript">// Safe text conversion
+function convertUserText(text) {
+  const MAX_LENGTH = 100;
+  const safeText = text.substring(0, MAX_LENGTH);
+
+  return generator.convertText(safeText, {
+    fontSize: 48,
+    fontWeight: 'bold'
+  });
+}</code></pre>
+            </div>
+
+            <div class="card mb-4">
+              <h3>6. Whitelist Font Families</h3>
+              <pre><code class="language-typescript">// Safe font selection
+const ALLOWED_FONTS = [
+  'Arial',
+  'Helvetica',
+  'Times New Roman',
+  'Courier New'
+];
+
+function getSafeFont(userFont) {
+  return ALLOWED_FONTS.includes(userFont) ? userFont : 'Arial';
+}
+
+const result = generator.convertText('Hello', {
+  font: getSafeFont(userInput)
+});</code></pre>
+            </div>
+
+            <div class="card mb-4">
+              <h3>7. Implement Rate Limiting</h3>
+              <pre><code class="language-typescript">// Debounce user input
+import { debounce } from 'lodash';
+
+const debouncedConvert = debounce((img) => {
+  const result = generator.convertImage(img);
+  updateDisplay(result.html);
+}, 300);
+
+inputElement.addEventListener('change', (e) => {
+  debouncedConvert(e.target.files[0]);
+});</code></pre>
+            </div>
+          </section>
+
+          <!-- Secure Implementation Example -->
+          <section id="secure-implementation" class="mb-4">
+            <h2>Complete Secure Implementation</h2>
+
+            <div class="card mb-4">
+              <h3>Example: Secure ASCII Converter Class</h3>
+              <pre><code class="language-typescript">import { AsciiGenerator, CharsetPreset } from 'ts-ascii-engine';
+
+class SecureAsciiConverter {
+  private generator: AsciiGenerator;
+  private readonly MAX_WIDTH = 200;
+  private readonly MAX_TEXT_LENGTH = 500;
+  private readonly ALLOWED_FONTS = ['Arial', 'Courier New', 'Georgia'];
+
+  constructor() {
+    // Use preset, not user input
+    this.generator = new AsciiGenerator({
+      charset: CharsetPreset.STANDARD,
+      width: this.MAX_WIDTH,
+      colored: true
+    });
+  }
+
+  async convertImageSafely(imageUrl: string): Promise&lt;string&gt; {
+    // Validate URL
+    if (!this.isValidImageUrl(imageUrl)) {
+      throw new Error('Invalid image URL');
+    }
+
+    // Load with CORS
+    const img = await this.loadImageWithCORS(imageUrl);
+
+    // Convert
+    const result = this.generator.convertImage(img);
+
+    return result.html;
+  }
+
+  convertTextSafely(text: string, font: string = 'Arial'): string {
+    // Sanitize inputs
+    const safeText = text.substring(0, this.MAX_TEXT_LENGTH);
+    const safeFont = this.ALLOWED_FONTS.includes(font) ? font : 'Arial';
+
+    // Convert
+    const result = this.generator.convertText(safeText, {
+      font: safeFont,
+      fontSize: 48,
+      fontWeight: 'bold'
+    });
+
+    return result.html;
+  }
+
+  private async loadImageWithCORS(url: string): Promise&lt;HTMLImageElement&gt; {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = url;
+    });
+  }
+
+  private isValidImageUrl(url: string): boolean {
+    try {
+      const parsed = new URL(url);
+      return ['http:', 'https:'].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  }
+}
+
+// Usage
+const converter = new SecureAsciiConverter();
+
+try {
+  const html = await converter.convertImageSafely(userProvidedUrl);
+  document.getElementById('output').innerHTML = html;
+} catch (error) {
+  console.error('Conversion failed:', error);
+}</code></pre>
+            </div>
+          </section>
+
+          <!-- Security Checklist -->
+          <section id="checklist" class="mb-4">
+            <h2>Security Checklist</h2>
+
+            <div class="card mb-4">
+              <h3>Before Deploying to Production</h3>
+
+              <div class="checklist">
+                <label class="checklist-item">
+                  <input type="checkbox" /> Never pass unsanitized user input as
+                  charset
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Set application-specific dimension
+                  limits
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Implement CSP headers if displaying
+                  HTML
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Use
+                  <code>crossOrigin="anonymous"</code> for external images
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Validate and limit text input length
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Whitelist allowed font families
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Implement rate limiting for
+                  conversions
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Consider using text output instead of
+                  HTML for strictest security
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Test with malicious inputs during
+                  development
+                </label>
+                <label class="checklist-item">
+                  <input type="checkbox" /> Keep the library updated
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <!-- Threat Model -->
+          <section class="mb-4">
+            <h2>Threat Model</h2>
+
+            <div class="grid grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="card">
+                <h3 class="text-success"><i class="ri-shield-check-line"></i> Protected Against</h3>
+                <ul>
+                  <li>XSS via charset injection</li>
+                  <li>DoS via memory exhaustion</li>
+                  <li>HTML injection</li>
+                  <li>Out-of-bounds array access</li>
+                  <li>CSS injection</li>
+                </ul>
+              </div>
+
+              <div class="card">
+                <h3 class="text-warning"><i class="ri-alert-fill"></i> Cannot Protect Against</h3>
+                <ul>
+                  <li>Server-side attacks (client-side library)</li>
+                  <li>Network attacks during image loading</li>
+                  <li>Social engineering</li>
+                  <li>Application-level logic flaws</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Vulnerability Reporting -->
+          <section class="mb-4">
+            <h2>Vulnerability Reporting</h2>
+
+            <div class="alert alert-danger">
+              <strong><i class="ri-alarm-warning-line"></i> Responsible Disclosure:</strong> If you discover a security
+              vulnerability, please report it responsibly.
+            </div>
+
+            <div class="card mb-4">
+              <h3>How to Report</h3>
+              <ol>
+                <li><strong>Do not</strong> open a public issue</li>
+                <li>
+                  Email details to:
+                  <strong>[your-security-email@example.com]</strong>
+                </li>
+                <li>
+                  Include:
+                  <ul>
+                    <li>Description of the vulnerability</li>
+                    <li>Steps to reproduce</li>
+                    <li>Potential impact</li>
+                    <li>Suggested fix (if any)</li>
+                  </ul>
+                </li>
+                <li>We will respond within 48 hours</li>
+              </ol>
+            </div>
+          </section>
+
+          <!-- Updates -->
+          <section class="mb-4">
+            <h2>Security Updates</h2>
+
+            <div class="alert alert-info">
+              <strong><i class="ri-refresh-line"></i> Stay Updated:</strong> Security fixes are released as patch
+              versions. Always use the latest version.
+            </div>
+
+            <pre><code class="language-bash"># Check for updates
+npm outdated ts-ascii-engine
+
+# Update to latest version
+npm update ts-ascii-engine</code></pre>
+
+            <p>Consider using automated dependency management tools:</p>
+            <ul>
+              <li>
+                <a href="https://github.com/dependabot" target="_blank"
+                  >Dependabot</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.mend.io/free-developer-tools/renovate/"
+                  target="_blank"
+                  >Renovate</a
+                >
+              </li>
+              <li><a href="https://snyk.io/" target="_blank">Snyk</a></li>
+            </ul>
+          </section>
+
+          <!-- Additional Resources -->
+          <section class="mb-4">
+            <h2>Additional Resources</h2>
+
+            <div class="grid grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+              <a
+                href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+                target="_blank"
+                class="card link-card"
+                style="text-decoration: none; color: inherit; display: block;"
+              >
+                <h3>OWASP XSS Prevention</h3>
+                <p>Comprehensive guide to preventing cross-site scripting</p>
+              </a>
+
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP"
+                target="_blank"
+                class="card link-card"
+                style="text-decoration: none; color: inherit; display: block;"
+              >
+                <h3>MDN: CSP</h3>
+                <p>Content Security Policy documentation and examples</p>
+              </a>
+
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+                target="_blank"
+                class="card link-card"
+                style="text-decoration: none; color: inherit; display: block;"
+              >
+                <h3>MDN: CORS</h3>
+                <p>Cross-Origin Resource Sharing guide</p>
+              </a>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-content">
+          <div style="font-size: 0.875rem; display: flex; gap: 1.5rem; justify-content: center; align-items: center;">
+             <span>&copy; 2026 ts-ascii-engine</span>
+             <a href="https://github.com/yourusername/ts-ascii-engine" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+               <i class="ri-github-fill"></i> GitHub
+             </a>
+             <a href="security.html" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+               <i class="ri-shield-check-line"></i> Security
+             </a>
+             <a href="#" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                <i class="ri-file-text-line"></i> License
+             </a>
+          </div>
+          <div class="footer-attribution">
+            Built with <i class="ri-heart-fill heart-icon"></i> by <a href="https://github.com/mofirojean" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">Mofiro Jean</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Sidebar active link on scroll
+      const sections = document.querySelectorAll("section[id]");
+      const sidebarLinks = document.querySelectorAll(".sidebar-link");
+
+      window.addEventListener("scroll", () => {
+        let current = "";
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          if (window.pageYOffset >= sectionTop - 100) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        sidebarLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === `#${current}`) {
+            link.classList.add("active");
+          }
+        });
+      });
+    </script>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuBackdrop" class="mobile-menu-backdrop"></div>
+    <div id="mobileMenu" class="mobile-menu">
+      <div class="mobile-menu-header">
+        <span class="logo"><i class="ri-artboard-2-line"></i> Menu</span>
+        <button id="closeMobileMenu" class="mobile-menu-btn" aria-label="Close menu">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="index.html" class="nav-link"><i class="ri-home-line"></i> Home</a>
+        <a href="api.html" class="nav-link"><i class="ri-book-open-line"></i> API Reference</a>
+        <a href="examples.html" class="nav-link"><i class="ri-code-s-slash-line"></i> Examples</a>
+        <a href="security.html" class="nav-link active"><i class="ri-shield-check-line"></i> Security</a>
+        <a href="https://github.com/yourusername/ts-ascii-engine" class="nav-link"><i class="ri-github-line"></i> GitHub</a>
+      </nav>
+    </div>
+  </body>
+</html>
