@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ts-ascii-engine - Web Worker Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .info {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .controls {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+    video {
+      max-width: 400px;
+      border-radius: 8px;
+    }
+    #output {
+      background: #000;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .stat-card {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 4px;
+    }
+    .stat-card strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #4CAF50;
+    }
+    .stat-value {
+      font-size: 1.5em;
+    }
+  </style>
+</head>
+<body>
+  <h1>ts-ascii-engine - Web Worker Demo</h1>
+
+  <div class="info">
+    <h3>About Web Workers</h3>
+    <p>
+      This example demonstrates processing ASCII conversion in a background thread using Web Workers.
+      This prevents the conversion from blocking the main UI thread, keeping your application responsive
+      even during intensive processing.
+    </p>
+    <p>
+      <strong>Benefits:</strong> Non-blocking UI, better performance for real-time video, parallel processing
+    </p>
+  </div>
+
+  <div class="controls">
+    <button id="startBtn">Start Webcam</button>
+    <button id="stopBtn" disabled>Stop Webcam</button>
+    <label><input type="checkbox" id="coloredCheck" checked> Colored</label>
+  </div>
+
+  <video id="video" autoplay muted></video>
+  <div id="output"></div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <strong>FPS</strong>
+      <div class="stat-value" id="fps">0</div>
+    </div>
+    <div class="stat-card">
+      <strong>Processing Time</strong>
+      <div class="stat-value" id="processTime">0ms</div>
+    </div>
+    <div class="stat-card">
+      <strong>Dimensions</strong>
+      <div class="stat-value" id="dimensions">0x0</div>
+    </div>
+    <div class="stat-card">
+      <strong>Characters</strong>
+      <div class="stat-value" id="charCount">0</div>
+    </div>
+  </div>
+
+  <script>
+    console.log('Web Worker Demo');
+    console.log('In production, compile ascii-worker.ts and load it as a worker');
+
+    /*
+    // Example implementation:
+
+    // Create worker
+    const worker = new Worker('ascii-worker.js', { type: 'module' });
+
+    const video = document.getElementById('video');
+    const output = document.getElementById('output');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const coloredCheck = document.getElementById('coloredCheck');
+
+    let stream = null;
+    let animationId = null;
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let isProcessing = false;
+
+    // Handle messages from worker
+    worker.onmessage = (e) => {
+      const { type, result, error } = e.data;
+
+      if (type === 'error') {
+        console.error('Worker error:', error);
+        return;
+      }
+
+      if (type === 'result' && result) {
+        output.innerHTML = result.html;
+
+        // Update stats
+        document.getElementById('processTime').textContent =
+          result.metadata.processingTime.toFixed(2) + 'ms';
+        document.getElementById('dimensions').textContent =
+          `${result.metadata.width}x${result.metadata.height}`;
+        document.getElementById('charCount').textContent =
+          result.metadata.characterCount.toLocaleString();
+
+        isProcessing = false;
+      }
+    };
+
+    // Start webcam
+    startBtn.addEventListener('click', async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480 }
+        });
+        video.srcObject = stream;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        renderLoop();
+      } catch (err) {
+        console.error('Error accessing webcam:', err);
+        alert('Could not access webcam');
+      }
+    });
+
+    // Stop webcam
+    stopBtn.addEventListener('click', () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+        cancelAnimationFrame(animationId);
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      }
+    });
+
+    // Update colored mode
+    coloredCheck.addEventListener('change', (e) => {
+      worker.postMessage({
+        type: 'updateConfig',
+        config: { colored: e.target.checked }
+      });
+    });
+
+    // Rendering loop
+    function renderLoop() {
+      if (!isProcessing && video.readyState === video.HAVE_ENOUGH_DATA) {
+        isProcessing = true;
+
+        // Extract ImageData from video
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Send to worker
+        worker.postMessage({
+          type: 'convert',
+          imageData
+        }, [imageData.data.buffer]); // Transfer ownership for performance
+
+        // Update FPS
+        frameCount++;
+        const now = performance.now();
+        if (now - lastTime >= 1000) {
+          document.getElementById('fps').textContent = frameCount;
+          frameCount = 0;
+          lastTime = now;
+        }
+      }
+
+      animationId = requestAnimationFrame(renderLoop);
+    }
+    */
+  </script>
+</body>
+</html>

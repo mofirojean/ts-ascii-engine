@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ts-ascii-engine - Basic Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .controls {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: #2a2a2a;
+      border-radius: 8px;
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+      font-weight: bold;
+    }
+    select, input[type="range"], input[type="number"], input[type="file"] {
+      padding: 5px;
+      margin-left: 10px;
+    }
+    input[type="range"] {
+      width: 200px;
+    }
+    #output {
+      background: #000;
+      padding: 10px;
+      overflow: auto;
+      border-radius: 4px;
+    }
+    .info {
+      margin-top: 10px;
+      padding: 10px;
+      background: #2a2a2a;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    img {
+      max-width: 400px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>ts-ascii-engine - Basic Example</h1>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="imageUpload">Upload Image:</label>
+      <input type="file" id="imageUpload" accept="image/*">
+    </div>
+
+    <div class="control-group">
+      <label for="charset">Charset:</label>
+      <select id="charset">
+        <option value="BLOCK">Block (██▓▒░)</option>
+        <option value="STANDARD" selected>Standard (@%#*+=-:.)</option>
+        <option value="MINIMAL">Minimal (@+.)</option>
+        <option value="EXTENDED">Extended (70+ chars)</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="width">Width:</label>
+      <input type="range" id="width" min="20" max="200" value="80">
+      <span id="widthValue">80</span> chars
+    </div>
+
+    <div class="control-group">
+      <label for="aspectRatio">Aspect Ratio:</label>
+      <input type="range" id="aspectRatio" min="0.3" max="0.8" step="0.05" value="0.55">
+      <span id="aspectRatioValue">0.55</span>
+    </div>
+
+    <div class="control-group">
+      <label for="colored">Colored:</label>
+      <input type="checkbox" id="colored">
+    </div>
+
+    <div class="control-group">
+      <label for="inverted">Inverted:</label>
+      <input type="checkbox" id="inverted">
+    </div>
+  </div>
+
+  <img id="preview" style="display: none;">
+  <div id="output"></div>
+
+  <div class="info" id="info"></div>
+
+  <!-- Use module script for ES6 imports -->
+  <script type="module">
+    // In a real scenario, you'd import from the built library
+    // For this demo, we'll simulate the import
+    // import { AsciiGenerator, CharsetPreset } from '../dist/index.esm.js';
+
+    // Mock implementation for demonstration
+    // In production, uncomment the import above and remove this mock
+    console.log('This is a demo HTML. Build the library first with: npm run build');
+    console.log('Then import from: ../dist/index.esm.js');
+
+    // Example of how the code would work:
+    /*
+    import { AsciiGenerator, CharsetPreset } from '../dist/index.esm.js';
+
+    let generator = new AsciiGenerator({
+      charset: CharsetPreset.STANDARD,
+      width: 80,
+      aspectRatio: 0.55,
+      colored: false,
+      inverted: false
+    });
+
+    const imageUpload = document.getElementById('imageUpload');
+    const preview = document.getElementById('preview');
+    const output = document.getElementById('output');
+    const info = document.getElementById('info');
+
+    // Handle image upload
+    imageUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        preview.src = event.target.result;
+        preview.style.display = 'block';
+        preview.onload = () => {
+          convertImage();
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Update configuration on control changes
+    document.getElementById('charset').addEventListener('change', (e) => {
+      generator.updateConfig({ charset: CharsetPreset[e.target.value] });
+      convertImage();
+    });
+
+    document.getElementById('width').addEventListener('input', (e) => {
+      document.getElementById('widthValue').textContent = e.target.value;
+      generator.updateConfig({ width: parseInt(e.target.value) });
+      convertImage();
+    });
+
+    document.getElementById('aspectRatio').addEventListener('input', (e) => {
+      document.getElementById('aspectRatioValue').textContent = e.target.value;
+      generator.updateConfig({ aspectRatio: parseFloat(e.target.value) });
+      convertImage();
+    });
+
+    document.getElementById('colored').addEventListener('change', (e) => {
+      generator.updateConfig({ colored: e.target.checked });
+      convertImage();
+    });
+
+    document.getElementById('inverted').addEventListener('change', (e) => {
+      generator.updateConfig({ inverted: e.target.checked });
+      convertImage();
+    });
+
+    function convertImage() {
+      if (preview.complete && preview.naturalHeight !== 0) {
+        const result = generator.convertImage(preview);
+        output.innerHTML = result.html;
+
+        info.innerHTML = `
+          <strong>Processing Time:</strong> ${result.metadata.processingTime.toFixed(2)}ms<br>
+          <strong>Dimensions:</strong> ${result.metadata.width} × ${result.metadata.height} characters<br>
+          <strong>Total Characters:</strong> ${result.metadata.characterCount.toLocaleString()}<br>
+          <strong>Charset:</strong> ${result.metadata.charset}
+        `;
+      }
+    }
+    */
+  </script>
+</body>
+</html>

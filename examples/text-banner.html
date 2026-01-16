@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ts-ascii-engine - Text to ASCII Banner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .controls {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: #2a2a2a;
+      border-radius: 8px;
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="number"], select {
+      padding: 8px;
+      width: 250px;
+      margin-left: 10px;
+      font-size: 14px;
+    }
+    input[type="number"] {
+      width: 80px;
+    }
+    button {
+      padding: 10px 30px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #output {
+      background: #000;
+      padding: 20px;
+      border-radius: 4px;
+      overflow: auto;
+    }
+    .example-buttons {
+      margin-top: 10px;
+    }
+    .example-buttons button {
+      padding: 5px 15px;
+      font-size: 14px;
+      margin-right: 10px;
+      background: #2196F3;
+    }
+    .example-buttons button:hover {
+      background: #0b7dda;
+    }
+  </style>
+</head>
+<body>
+  <h1>ts-ascii-engine - Text to ASCII Banner</h1>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="textInput">Text:</label>
+      <input type="text" id="textInput" value="HELLO" maxlength="20">
+    </div>
+
+    <div class="control-group">
+      <label for="fontSelect">Font:</label>
+      <select id="fontSelect">
+        <option value="Arial" selected>Arial</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Impact">Impact</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Comic Sans MS">Comic Sans MS</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="fontSizeInput">Font Size:</label>
+      <input type="number" id="fontSizeInput" value="72" min="20" max="200">px
+    </div>
+
+    <div class="control-group">
+      <label for="fontWeightSelect">Font Weight:</label>
+      <select id="fontWeightSelect">
+        <option value="normal" selected>Normal</option>
+        <option value="bold">Bold</option>
+        <option value="100">100 (Thin)</option>
+        <option value="300">300 (Light)</option>
+        <option value="500">500 (Medium)</option>
+        <option value="700">700 (Bold)</option>
+        <option value="900">900 (Black)</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="charsetSelect">Charset:</label>
+      <select id="charsetSelect">
+        <option value="BLOCK">Block (██▓▒░)</option>
+        <option value="STANDARD" selected>Standard (@%#*+=-:.)</option>
+        <option value="MINIMAL">Minimal (@+.)</option>
+        <option value="EXTENDED">Extended</option>
+      </select>
+    </div>
+
+    <button id="generateBtn">Generate ASCII</button>
+
+    <div class="example-buttons">
+      <strong>Examples:</strong>
+      <button onclick="setExample('HELLO', 'Impact', 72, 'bold')">Bold Impact</button>
+      <button onclick="setExample('ASCII', 'Courier New', 60, 'bold')">Courier</button>
+      <button onclick="setExample('CODE', 'Arial', 80, '900')">Heavy Arial</button>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <script type="module">
+    // In production, import from built library:
+
+    console.log('This is a demo HTML. Build the library first with: npm run build');
+    console.log('Usage example for text-to-ASCII conversion');
+
+    import { AsciiGenerator, CharsetPreset } from '../dist/index.esm.js';
+
+    const generator = new AsciiGenerator({
+      charset: CharsetPreset.STANDARD
+    });
+
+    const textInput = document.getElementById('textInput');
+    const fontSelect = document.getElementById('fontSelect');
+    const fontSizeInput = document.getElementById('fontSizeInput');
+    const fontWeightSelect = document.getElementById('fontWeightSelect');
+    const charsetSelect = document.getElementById('charsetSelect');
+    const generateBtn = document.getElementById('generateBtn');
+    const output = document.getElementById('output');
+
+    function generate() {
+      const text = textInput.value.trim();
+      if (!text) {
+        alert('Please enter some text');
+        return;
+      }
+
+      generator.updateConfig({
+        charset: CharsetPreset[charsetSelect.value]
+      });
+
+      const result = generator.convertText(text, {
+        font: fontSelect.value,
+        fontSize: parseInt(fontSizeInput.value),
+        fontWeight: fontWeightSelect.value
+      });
+
+      output.innerHTML = result.html;
+    }
+
+    generateBtn.addEventListener('click', generate);
+
+    textInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') generate();
+    });
+
+    // Set example
+    window.setExample = function(text, font, size, weight) {
+      textInput.value = text;
+      fontSelect.value = font;
+      fontSizeInput.value = size;
+      fontWeightSelect.value = weight;
+      generate();
+    };
+
+    // Generate on load
+    generate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Test - ts-ascii-engine</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    #output {
+      background: #000;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      background: #2a2a2a;
+    }
+    .success { color: #4CAF50; }
+    .error { color: #f44336; }
+  </style>
+</head>
+<body>
+  <h1>Quick Import Test</h1>
+  <div id="status" class="status">Testing imports...</div>
+  <div id="output"></div>
+
+  <script type="module">
+    const statusDiv = document.getElementById('status');
+    const outputDiv = document.getElementById('output');
+
+    try {
+      // Test import
+      statusDiv.innerHTML = 'Importing library...';
+      const { AsciiGenerator, CharsetPreset } = await import('../dist/index.esm.js');
+
+      statusDiv.innerHTML = '<span class="success">✓ Import successful!</span>';
+
+      // Test creating instance
+      statusDiv.innerHTML += '<br>Creating generator...';
+      const generator = new AsciiGenerator({
+        charset: CharsetPreset.BLOCK,
+        width: 40
+      });
+
+      statusDiv.innerHTML += '<br><span class="success">✓ Generator created!</span>';
+
+      // Test text conversion
+      statusDiv.innerHTML += '<br>Converting text to ASCII...';
+      const result = generator.convertText('HELLO', {
+        font: 'Arial',
+        fontSize: 48,
+        fontWeight: 'bold'
+      });
+
+      statusDiv.innerHTML += '<br><span class="success">✓ Conversion successful!</span>';
+      statusDiv.innerHTML += '<br><br><strong>All tests passed! The library is working correctly.</strong>';
+
+      // Display output
+      outputDiv.innerHTML = result.html;
+
+    } catch (error) {
+      statusDiv.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+      console.error('Full error:', error);
+    }
+  </script>
+</body>
+</html>

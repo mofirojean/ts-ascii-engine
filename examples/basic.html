@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ts-ascii-engine - Image to ASCII Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .controls {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: #2a2a2a;
+      border-radius: 8px;
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+      font-weight: bold;
+    }
+    select, input[type="range"], input[type="file"] {
+      padding: 5px;
+      margin-left: 10px;
+    }
+    input[type="range"] {
+      width: 200px;
+    }
+    input[type="file"] {
+      padding: 8px;
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    input[type="file"]::file-selector-button {
+      padding: 6px 12px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    input[type="file"]::file-selector-button:hover {
+      background: #45a049;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button.secondary {
+      background: #2196F3;
+    }
+    button.secondary:hover {
+      background: #0b7dda;
+    }
+    .preview-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .preview-box {
+      background: #2a2a2a;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .preview-box h3 {
+      margin-top: 0;
+      color: #4CAF50;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      background: #000;
+    }
+    #output {
+      background: #000;
+      padding: 10px;
+      overflow: auto;
+      border-radius: 4px;
+      max-height: 600px;
+    }
+    .info {
+      margin-top: 10px;
+      padding: 15px;
+      background: #2a2a2a;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .sample-images {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #444;
+    }
+    .sample-images p {
+      margin: 5px 0;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+    .hidden {
+      display: none;
+    }
+    .tip {
+      background: #333;
+      padding: 10px;
+      border-left: 3px solid #4CAF50;
+      margin: 15px 0;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎨 ASCII Art Generator</h1>
+    <p>Convert any image into beautiful ASCII art</p>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="imageUpload">📁 Upload Image:</label>
+      <input type="file" id="imageUpload" accept="image/*">
+    </div>
+
+    <div class="sample-images">
+      <p><strong>Or try a sample image:</strong></p>
+      <button class="secondary" onclick="loadSampleImage('landscape')">🏞️ Landscape</button>
+      <button class="secondary" onclick="loadSampleImage('portrait')">👤 Portrait</button>
+      <button class="secondary" onclick="loadSampleImage('pattern')">🎨 Pattern</button>
+    </div>
+
+    <div class="control-group" style="margin-top: 20px;">
+      <label for="charset">Character Set:</label>
+      <select id="charset">
+        <option value="BLOCK">Block (██▓▒░)</option>
+        <option value="STANDARD" selected>Standard (@%#*+=-:.)</option>
+        <option value="MINIMAL">Minimal (@+.)</option>
+        <option value="EXTENDED">Extended (70+ chars)</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="width">Width:</label>
+      <input type="range" id="width" min="20" max="200" value="100">
+      <span id="widthValue">100</span> chars
+    </div>
+
+    <div class="control-group">
+      <label for="aspectRatio">Aspect Ratio:</label>
+      <input type="range" id="aspectRatio" min="0.3" max="0.8" step="0.05" value="0.55">
+      <span id="aspectRatioValue">0.55</span>
+    </div>
+
+    <div class="control-group">
+      <label for="colored">🎨 Colored:</label>
+      <input type="checkbox" id="colored">
+    </div>
+
+    <div class="control-group">
+      <label for="inverted">🔄 Inverted:</label>
+      <input type="checkbox" id="inverted">
+    </div>
+
+    <div class="control-group">
+      <button onclick="downloadAsText()">💾 Download as TXT</button>
+      <button onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>💡 Tip:</strong> For best results, use high-contrast images. Portraits and landscapes work great!
+    Adjust the width slider to control detail level.
+  </div>
+
+  <div class="preview-container">
+    <div class="preview-box">
+      <h3>Original Image</h3>
+      <img id="preview" class="hidden" alt="Preview">
+      <p id="noImageMsg" style="color: #666; text-align: center; padding: 40px;">
+        Upload an image or select a sample to begin
+      </p>
+    </div>
+    <div class="preview-box">
+      <h3>ASCII Output</h3>
+      <div id="output">
+        <p style="color: #666; text-align: center; padding: 40px;">
+          ASCII output will appear here
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="info" id="info"></div>
+
+  <script type="module">
+    import { AsciiGenerator, CharsetPreset } from '../dist/index.esm.js';
+
+    let generator = new AsciiGenerator({
+      charset: CharsetPreset.STANDARD,
+      width: 100,
+      aspectRatio: 0.55,
+      colored: false,
+      inverted: false
+    });
+
+    let currentResult = null;
+
+    const imageUpload = document.getElementById('imageUpload');
+    const preview = document.getElementById('preview');
+    const noImageMsg = document.getElementById('noImageMsg');
+    const output = document.getElementById('output');
+    const info = document.getElementById('info');
+
+    // Sample images (using canvas-generated samples)
+    const sampleImages = {
+      landscape: null,
+      portrait: null,
+      pattern: null
+    };
+
+    // Create gradient landscape
+    function createLandscape() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+
+      // Sky gradient
+      const skyGradient = ctx.createLinearGradient(0, 0, 0, 400);
+      skyGradient.addColorStop(0, '#1e3a5f');
+      skyGradient.addColorStop(1, '#87CEEB');
+      ctx.fillStyle = skyGradient;
+      ctx.fillRect(0, 0, 800, 400);
+
+      // Sun
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(650, 150, 60, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Mountains
+      ctx.fillStyle = '#2C3E50';
+      ctx.beginPath();
+      ctx.moveTo(0, 400);
+      ctx.lineTo(200, 250);
+      ctx.lineTo(400, 350);
+      ctx.lineTo(600, 200);
+      ctx.lineTo(800, 380);
+      ctx.lineTo(800, 400);
+      ctx.closePath();
+      ctx.fill();
+
+      // Ground
+      const groundGradient = ctx.createLinearGradient(0, 400, 0, 600);
+      groundGradient.addColorStop(0, '#27AE60');
+      groundGradient.addColorStop(1, '#145A32');
+      ctx.fillStyle = groundGradient;
+      ctx.fillRect(0, 400, 800, 200);
+
+      return canvas.toDataURL();
+    }
+
+    // Create portrait
+    function createPortrait() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 800;
+      const ctx = canvas.getContext('2d');
+
+      // Background gradient
+      const bgGradient = ctx.createRadialGradient(300, 300, 50, 300, 400, 400);
+      bgGradient.addColorStop(0, '#FFF');
+      bgGradient.addColorStop(0.5, '#DDD');
+      bgGradient.addColorStop(1, '#999');
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, 600, 800);
+
+      // Head
+      ctx.fillStyle = '#FFE4C4';
+      ctx.beginPath();
+      ctx.ellipse(300, 350, 150, 180, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyes
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(250, 320, 18, 0, Math.PI * 2);
+      ctx.arc(350, 320, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Nose
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(300, 340);
+      ctx.lineTo(290, 380);
+      ctx.stroke();
+
+      // Mouth (smile)
+      ctx.beginPath();
+      ctx.arc(300, 380, 60, 0.2 * Math.PI, 0.8 * Math.PI);
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      return canvas.toDataURL();
+    }
+
+    // Create pattern
+    function createPattern() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+      const size = 30;
+
+      for (let y = 0; y < 600; y += size) {
+        for (let x = 0; x < 600; x += size) {
+          const isBlack = ((x / size) + (y / size)) % 2 === 0;
+          const brightness = Math.floor((x + y) / 6);
+          ctx.fillStyle = isBlack ? `rgb(${brightness}, ${brightness}, ${brightness})` : '#FFF';
+          ctx.fillRect(x, y, size, size);
+        }
+      }
+
+      return canvas.toDataURL();
+    }
+
+    // Initialize sample images
+    sampleImages.landscape = createLandscape();
+    sampleImages.portrait = createPortrait();
+    sampleImages.pattern = createPattern();
+
+    // Load sample image
+    window.loadSampleImage = function(type) {
+      const img = new Image();
+      img.onload = () => {
+        preview.src = img.src;
+        preview.classList.remove('hidden');
+        noImageMsg.style.display = 'none';
+        convertImage();
+      };
+      img.src = sampleImages[type];
+    };
+
+    // Handle image upload
+    imageUpload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        preview.src = event.target.result;
+        preview.classList.remove('hidden');
+        noImageMsg.style.display = 'none';
+        preview.onload = () => {
+          convertImage();
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Update configuration on control changes
+    document.getElementById('charset').addEventListener('change', (e) => {
+      generator.updateConfig({ charset: CharsetPreset[e.target.value] });
+      convertImage();
+    });
+
+    document.getElementById('width').addEventListener('input', (e) => {
+      document.getElementById('widthValue').textContent = e.target.value;
+      generator.updateConfig({ width: parseInt(e.target.value) });
+      convertImage();
+    });
+
+    document.getElementById('aspectRatio').addEventListener('input', (e) => {
+      document.getElementById('aspectRatioValue').textContent = e.target.value;
+      generator.updateConfig({ aspectRatio: parseFloat(e.target.value) });
+      convertImage();
+    });
+
+    document.getElementById('colored').addEventListener('change', (e) => {
+      generator.updateConfig({ colored: e.target.checked });
+      convertImage();
+    });
+
+    document.getElementById('inverted').addEventListener('change', (e) => {
+      generator.updateConfig({ inverted: e.target.checked });
+      convertImage();
+    });
+
+    function convertImage() {
+      if (preview.complete && preview.naturalHeight !== 0) {
+        currentResult = generator.convertImage(preview);
+        output.innerHTML = currentResult.html;
+
+        info.innerHTML = `
+          <strong>⚡ Processing Time:</strong> ${currentResult.metadata.processingTime.toFixed(2)}ms<br>
+          <strong>📐 Dimensions:</strong> ${currentResult.metadata.width} × ${currentResult.metadata.height} characters<br>
+          <strong>📝 Total Characters:</strong> ${currentResult.metadata.characterCount.toLocaleString()}<br>
+          <strong>🎯 Charset:</strong> ${currentResult.metadata.charset}
+        `;
+      }
+    }
+
+    // Download as text file
+    window.downloadAsText = function() {
+      if (!currentResult) {
+        alert('Please convert an image first!');
+        return;
+      }
+
+      const blob = new Blob([currentResult.text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ascii-art.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    // Copy to clipboard
+    window.copyToClipboard = function() {
+      if (!currentResult) {
+        alert('Please convert an image first!');
+        return;
+      }
+
+      navigator.clipboard.writeText(currentResult.text).then(() => {
+        alert('✅ ASCII art copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('❌ Failed to copy to clipboard');
+      });
+    };
+
+    // Load a default sample on page load
+    loadSampleImage('landscape');
+  </script>
+</body>
+</html>
