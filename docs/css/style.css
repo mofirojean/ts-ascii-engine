@@ -165,7 +165,6 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden; /* Prevent horizontal scroll from animations/off-screen elements */
   width: 100%;
 }
 
@@ -179,7 +178,6 @@ body {
     color var(--transition-base);
   width: 100%;
   position: relative;
-  overflow-x: hidden;
   overflow-wrap: break-word;
 }
 
