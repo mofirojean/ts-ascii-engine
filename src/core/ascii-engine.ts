@@ -95,6 +95,15 @@ export class AsciiGenerator {
       this.config.aspectRatio
     );
 
+    // Security check: Validate calculated dimensions against colored limit
+    if (this.config.colored) {
+      const totalChars = dimensions.width * dimensions.height;
+      const MAX_COLORED_CHARS = 1000000;
+      if (totalChars > MAX_COLORED_CHARS) {
+        throw new Error(`Output dimensions (${dimensions.width}x${dimensions.height}) exceed maximum allowed characters for colored output (${MAX_COLORED_CHARS})`);
+      }
+    }
+
     // Resize pixel data to target dimensions for processing
     const resizedPixelData = extractPixelData(
       source,
@@ -381,6 +390,16 @@ export class AsciiGenerator {
     // Check total character count if both dimensions specified
     if (this.config.width > 0 && this.config.height > 0) {
       const totalChars = this.config.width * this.config.height;
+      
+      // Strict limit for colored output to prevent memory exhaustion
+      // Colored output uses ~50 bytes per char (HTML span + inline style)
+      // 1M chars * 50 bytes = ~50MB, which is a safe upper limit for browser memory
+      const MAX_COLORED_CHARS = 1000000;
+      
+      if (this.config.colored && totalChars > MAX_COLORED_CHARS) {
+        throw new Error(`Total character count (${totalChars}) exceeds maximum allowed for colored output (${MAX_COLORED_CHARS})`);
+      }
+
       if (totalChars > MAX_TOTAL_CHARS) {
         throw new Error(`Total character count (${totalChars}) exceeds maximum allowed (${MAX_TOTAL_CHARS})`);
       }

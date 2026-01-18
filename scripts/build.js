@@ -90,14 +90,8 @@ execSync('tsc -p tsconfig.esm.json', { stdio: 'inherit' });
 log('Fixing ESM imports (adding .js extensions)...');
 addJsExtensions('dist-esm');
 
-// Copy ESM files to dist with .esm.js extension for entry point
-log('Copying ESM files to dist...');
-copyDirectory('dist-esm/core', 'dist/core', name => name.endsWith('.js'));
-copyDirectory('dist-esm/types', 'dist/types', name => name.endsWith('.js'));
-copyDirectory('dist-esm/utils', 'dist/utils', name => name.endsWith('.js'));
-
 // Copy the main ESM entry point
-copyFile('dist-esm/index.js', 'dist/index.esm.js');
+// copyFile('dist-esm/index.js', 'dist/index.esm.js'); // REMOVED: Keep dist-esm separate
 
 log('✓ Build completed successfully!');
 console.log('\nOutput:');

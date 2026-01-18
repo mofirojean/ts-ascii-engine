@@ -3,7 +3,7 @@
  * Run with: node test-build.js
  */
 
-const { AsciiGenerator, CharsetPreset } = require('./dist/index.js');
+const { AsciiGenerator, CharsetPreset } = require('../dist/index.js');
 
 console.log('Testing ts-ascii-engine build...\n');
 
@@ -99,7 +99,7 @@ try {
 // Test 6: Type exports
 console.log('\nTest 6: Type exports');
 try {
-  const { CHARSET_MAP } = require('./dist/index.js');
+  const { CHARSET_MAP } = require('../dist/index.js');
   console.log('✓ CHARSET_MAP exported');
   console.log('  Available presets:', Object.keys(CHARSET_MAP));
 } catch (error) {
@@ -114,7 +114,7 @@ try {
     calculateLuminance,
     luminanceToChar,
     calculateDimensions
-  } = require('./dist/index.js');
+  } = require('../dist/index.js');
 
   // Test luminance calculation
   const lum = calculateLuminance(100, 150, 200);

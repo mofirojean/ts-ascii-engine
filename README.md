@@ -535,6 +535,32 @@ import type {
 
 MIT
 
+## Development & Testing
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+```
+
+### Running Tests
+
+This project includes automated test suites for build verification and security constraints.
+
+```bash
+# Run build verification tests
+npm test
+
+# Run security limit tests
+npm run test:security
+```
+
+For manual testing of visual examples, see the [Testing Guide](TESTING_GUIDE.md).
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

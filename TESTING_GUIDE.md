@@ -9,6 +9,18 @@ cd "D:\Projects\Open Source Peojects\ts-ascii-engine"
 npm run build
 ```
 
+### Step 1.5: Automated Verification (Optional)
+
+Before manual testing, you can run the automated test suite:
+
+```bash
+# Verify build integrity
+npm test
+
+# Verify security limits
+npm run test:security
+```
+
 ### Step 2: Start a Web Server
 
 Choose ONE of these options:

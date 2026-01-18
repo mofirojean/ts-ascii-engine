@@ -18,7 +18,7 @@ test-build.js
 .DS_Store
 
 # Build artifacts
-dist-esm/
+# dist-esm/ # Included in publish
 *.tsbuildinfo
 
 # Git

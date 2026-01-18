@@ -29,18 +29,23 @@ const generator = new AsciiGenerator({
 - **Issue**: Unbounded canvas dimensions could cause memory exhaustion (DoS)
 - **Protection**: Maximum limits enforced
   - Max width/height: 10,000 characters
-  - Max total characters: 25,000,000 (5000×5000)
+  - Max total characters (Standard): 25,000,000 (5000×5000)
+  - **Max total characters (Colored)**: 1,000,000 (1000×1000) - Strict limit to prevent browser crashes
 - **Implementation**: See `src/core/ascii-engine.ts:validateConfig()`
 
 ```typescript
-// THROWS ERROR
+// THROWS ERROR (Colored Mode Limit)
 const generator = new AsciiGenerator({
-  width: 1000000, // Exceeds maximum
+  width: 2000,
+  height: 2000,
+  colored: true, // 4M chars > 1M limit
 });
 
 // SAFE
 const generator = new AsciiGenerator({
-  width: 200, // Within limits
+  width: 1000,
+  height: 1000,
+  colored: true, // 1M chars <= 1M limit
 });
 ```
 
