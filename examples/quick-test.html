@@ -41,7 +41,7 @@
     try {
       // Test import
       statusDiv.innerHTML = 'Importing library...';
-      const { AsciiGenerator, CharsetPreset } = await import('../dist/index.esm.js');
+      const { AsciiGenerator, CharsetPreset } = await import('../dist-esm/index.js');
 
       statusDiv.innerHTML = '<span class="success">✓ Import successful!</span>';
 

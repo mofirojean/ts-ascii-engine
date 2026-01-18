@@ -93,6 +93,13 @@ addJsExtensions('dist-esm');
 // Copy the main ESM entry point
 // copyFile('dist-esm/index.js', 'dist/index.esm.js'); // REMOVED: Keep dist-esm separate
 
+// Copy ESM build to docs for self-contained deployment
+log('Copying ESM build to docs...');
+if (fs.existsSync('docs/dist-esm')) {
+  fs.rmSync('docs/dist-esm', { recursive: true });
+}
+copyDirectory('dist-esm', 'docs/dist-esm');
+
 log('✓ Build completed successfully!');
 console.log('\nOutput:');
 console.log('  - dist/index.js       (CommonJS)');

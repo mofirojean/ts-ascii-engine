@@ -61,6 +61,7 @@ Then open: `http://localhost:8000/examples/`
 ## Available Examples
 
 ### 1. quick-test.html
+
 **Quick verification that the build is working**
 
 - Tests ES module imports
@@ -69,6 +70,7 @@ Then open: `http://localhost:8000/examples/`
 - Perfect for verifying your build
 
 **Features tested:**
+
 - ✓ Module imports
 - ✓ Instance creation
 - ✓ Text conversion
@@ -79,6 +81,7 @@ Then open: `http://localhost:8000/examples/`
 ---
 
 ### 2. basic.html
+
 **Interactive image to ASCII converter**
 
 - Upload images
@@ -87,6 +90,7 @@ Then open: `http://localhost:8000/examples/`
 - See performance metrics
 
 **Features:**
+
 - Image file upload
 - Charset selection (Block, Standard, Minimal, Extended)
 - Width adjustment (20-200 characters)
@@ -100,6 +104,7 @@ Then open: `http://localhost:8000/examples/`
 ---
 
 ### 3. video.html
+
 **Real-time video stream to ASCII**
 
 - Webcam stream processing
@@ -108,6 +113,7 @@ Then open: `http://localhost:8000/examples/`
 - Performance monitoring
 
 **Features:**
+
 - Webcam access
 - Real-time conversion
 - Charset switching
@@ -121,6 +127,7 @@ Then open: `http://localhost:8000/examples/`
 ---
 
 ### 4. text-banner.html
+
 **Text to ASCII art banner generator**
 
 - Convert text to ASCII art
@@ -129,6 +136,7 @@ Then open: `http://localhost:8000/examples/`
 - Multiple preset examples
 
 **Features:**
+
 - Custom text input
 - Font family selection
 - Font size control
@@ -141,6 +149,7 @@ Then open: `http://localhost:8000/examples/`
 ---
 
 ### 5. worker/worker-demo.html
+
 **Web Worker integration example**
 
 - Off-thread ASCII processing
@@ -148,6 +157,7 @@ Then open: `http://localhost:8000/examples/`
 - Performance comparison
 
 **Features:**
+
 - Web Worker setup
 - Transferable objects
 - Background processing
@@ -187,6 +197,7 @@ npx tsc examples/worker/ascii-worker.ts --outDir examples/worker --module es2020
 **Problem:** Permission denied or camera in use
 
 **Solutions:**
+
 - Grant camera permissions when prompted
 - Close other apps using the camera
 - Use HTTPS (some browsers require it)
@@ -196,6 +207,7 @@ npx tsc examples/worker/ascii-worker.ts --outDir examples/worker --module es2020
 **Problem:** Slow rendering or low FPS
 
 **Solutions:**
+
 - Reduce the output width
 - Use a simpler charset (Minimal instead of Extended)
 - Disable colored mode
@@ -208,24 +220,24 @@ npx tsc examples/worker/ascii-worker.ts --outDir examples/worker --module es2020
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>My ASCII App</title>
-</head>
-<body>
-  <div id="output"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>My ASCII App</title>
+  </head>
+  <body>
+    <div id="output"></div>
 
-  <script type="module">
-    import { AsciiGenerator, CharsetPreset } from '../dist/index.esm.js';
+    <script type="module">
+      import { AsciiGenerator, CharsetPreset } from "../dist-esm/index.js";
 
-    const generator = new AsciiGenerator({
-      charset: CharsetPreset.BLOCK,
-      width: 80
-    });
+      const generator = new AsciiGenerator({
+        charset: CharsetPreset.BLOCK,
+        width: 80,
+      });
 
-    // Your code here
-  </script>
-</body>
+      // Your code here
+    </script>
+  </body>
 </html>
 ```
 
@@ -235,26 +247,27 @@ npx tsc examples/worker/ascii-worker.ts --outDir examples/worker --module es2020
 const img = new Image();
 img.onload = () => {
   const result = generator.convertImage(img);
-  document.getElementById('output').innerHTML = result.html;
+  document.getElementById("output").innerHTML = result.html;
 };
-img.src = 'path/to/image.jpg';
+img.src = "path/to/image.jpg";
 ```
 
 ### Real-time Video
 
 ```javascript
-const video = document.querySelector('video');
+const video = document.querySelector("video");
 function render() {
   const result = generator.convertImage(video);
-  document.getElementById('output').innerHTML = result.html;
+  document.getElementById("output").innerHTML = result.html;
   requestAnimationFrame(render);
 }
-video.addEventListener('play', render);
+video.addEventListener("play", render);
 ```
 
 ## Browser Compatibility
 
 All examples work in modern browsers:
+
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
@@ -271,6 +284,7 @@ ES modules and Canvas API required.
 ## Support
 
 If you encounter issues:
+
 1. Make sure you've run `npm run build`
 2. Verify you're using a local web server
 3. Check the browser console for errors

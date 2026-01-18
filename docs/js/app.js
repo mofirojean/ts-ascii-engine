@@ -2,7 +2,7 @@
  * Interactive demo functionality for ts-ascii-engine documentation
  */
 
-import { AsciiGenerator, CharsetPreset } from '../../dist/index.esm.js';
+import { AsciiGenerator, CharsetPreset } from '../dist-esm/index.js';
 
 // Global state
 let generator = new AsciiGenerator({

@@ -1326,12 +1326,17 @@ input[type="checkbox"]:checked::before {
   padding: var(--spacing-lg);
   background: #0f172a; /* Always dark for ASCII visibility */
   color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-family: monospace;
   overflow: auto;
   max-height: 500px;
+  line-height: 1.0; /* Tight line height for better ASCII aspect ratio */
+  white-space: nowrap; /* Prevent wrapping */
+  text-align: center; /* Center the block, but we need inner left align */
+}
+
+/* Ensure ASCII content stays left-aligned even if container is centered */
+.demo-output > * {
+  text-align: left;
 }
 
 /* Mobile Responsive */

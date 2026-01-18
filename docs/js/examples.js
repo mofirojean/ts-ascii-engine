@@ -2,25 +2,36 @@
  * Interactive examples for ts-ascii-engine documentation
  */
 
-import { AsciiGenerator, CharsetPreset } from '../../dist/index.esm.js';
+import { AsciiGenerator, CharsetPreset } from '../../dist-esm/index.js';
+
+
 
 // Generators for different examples
-const imageGenerator = new AsciiGenerator({
-  charset: CharsetPreset.BLOCK,
-  width: 100,
-  colored: false
-});
+let imageGenerator, videoGenerator, textGenerator;
 
-const videoGenerator = new AsciiGenerator({
-  charset: CharsetPreset.BLOCK,
-  width: 80,
-  colored: false
-});
+try {
+  imageGenerator = new AsciiGenerator({
+    charset: CharsetPreset.BLOCK,
+    width: 100,
+    colored: false
+  });
 
-const textGenerator = new AsciiGenerator({
-  charset: CharsetPreset.STANDARD,
-  width: 0
-});
+
+  videoGenerator = new AsciiGenerator({
+    charset: CharsetPreset.BLOCK,
+    width: 80,
+    colored: false
+  });
+
+
+  textGenerator = new AsciiGenerator({
+    charset: CharsetPreset.STANDARD,
+    width: 0
+  });
+
+} catch (e) {
+  console.error('❌ Failed to initialize generators:', e);
+}
 
 // State
 let currentImage = null;
@@ -33,6 +44,7 @@ let animationId = null;
 const imageInput = document.getElementById('imageInput');
 if (imageInput) {
   imageInput.addEventListener('change', (e) => {
+
     const file = e.target.files[0];
     if (!file) return;
 
@@ -40,6 +52,7 @@ if (imageInput) {
     reader.onload = (event) => {
       const img = new Image();
       img.onload = () => {
+
         currentImage = img;
         updateImageDemo();
       };
@@ -50,18 +63,28 @@ if (imageInput) {
 }
 
 window.updateImageDemo = function() {
-  if (!currentImage) return;
+  if (!currentImage) {
+    console.warn('⚠️ No image to convert');
+    return;
+  }
 
   const charset = document.getElementById('imageCharset')?.value;
   const colored = document.getElementById('imageColored')?.checked;
+  const outputDiv = document.getElementById('imageOutput');
 
-  imageGenerator.updateConfig({
-    charset: CharsetPreset[charset],
-    colored: colored || false
-  });
+  try {
+    imageGenerator.updateConfig({
+      charset: CharsetPreset[charset],
+      colored: colored || false
+    });
 
-  const result = imageGenerator.convertImage(currentImage);
-  document.getElementById('imageOutput').innerHTML = result.html;
+    const result = imageGenerator.convertImage(currentImage);
+    outputDiv.innerHTML = result.html; // Use innerHTML directly if result.html contains pre/span
+
+  } catch (e) {
+    console.error('❌ Image conversion failed:', e);
+    outputDiv.innerHTML = `<div style="color:red; padding:20px;">Error: ${e.message}</div>`;
+  }
 };
 
 window.updateImageWidth = function(value) {
@@ -77,10 +100,13 @@ window.startVideoDemo = async function() {
   const startBtn = document.getElementById('startVideo');
   const stopBtn = document.getElementById('stopVideo');
 
+
+
   try {
     videoStream = await navigator.mediaDevices.getUserMedia({
       video: { width: 640, height: 480 }
     });
+
 
     video.srcObject = videoStream;
     await video.play();
@@ -92,23 +118,29 @@ window.startVideoDemo = async function() {
     let lastTime = performance.now();
 
     function renderLoop() {
-      const result = videoGenerator.convertImage(video);
-      output.innerHTML = result.html;
+      try {
+        const result = videoGenerator.convertImage(video);
+        output.innerHTML = result.html;
 
-      // Calculate FPS
-      frameCount++;
-      const currentTime = performance.now();
-      if (currentTime - lastTime >= 1000) {
-        document.getElementById('fpsCounter').textContent = frameCount;
-        frameCount = 0;
-        lastTime = currentTime;
+        // Calculate FPS
+        frameCount++;
+        const currentTime = performance.now();
+        if (currentTime - lastTime >= 1000) {
+          document.getElementById('fpsCounter').textContent = frameCount;
+          frameCount = 0;
+          lastTime = currentTime;
+        }
+
+        videoAnimationId = requestAnimationFrame(renderLoop);
+      } catch (e) {
+        console.error('❌ Video render error:', e);
+        cancelAnimationFrame(videoAnimationId);
       }
-
-      videoAnimationId = requestAnimationFrame(renderLoop);
     }
 
     renderLoop();
   } catch (error) {
+    console.error('❌ Video start error:', error);
     output.innerHTML = `<p style="color: #f56565; padding: 20px;">Error: ${error.message}<br>Please allow camera access to continue.</p>`;
   }
 };
@@ -150,10 +182,20 @@ window.updateVideoWidth = function(value) {
 
 // ==================== Text Demo ====================
 window.updateTextDemo = function() {
-  const text = document.getElementById('textInput')?.value || 'HELLO';
+  const textInput = document.getElementById('textInput');
+  const textOutput = document.getElementById('textOutput');
+
+  if (!textInput || !textOutput) {
+    console.error('❌ Text inputs/outputs not found');
+    return;
+  }
+
+  const text = textInput.value || 'HELLO';
   const font = document.getElementById('textFont')?.value || 'Arial';
   const size = parseInt(document.getElementById('textSize')?.value) || 72;
   const weight = document.getElementById('textWeight')?.value || 'bold';
+
+
 
   try {
     const result = textGenerator.convertText(text, {
@@ -162,9 +204,11 @@ window.updateTextDemo = function() {
       fontWeight: weight
     });
 
-    document.getElementById('textOutput').innerHTML = result.html;
+    textOutput.innerHTML = result.html;
+
   } catch (error) {
-    document.getElementById('textOutput').innerHTML = `<p style="color: #f56565;">Error: ${error.message}</p>`;
+    console.error('❌ Text conversion failed:', error);
+    textOutput.innerHTML = `<p style="color: #f56565;">Error: ${error.message}</p>`;
   }
 };
 
@@ -175,7 +219,7 @@ window.updateTextSize = function(value) {
 
 // Initialize text demo
 if (document.getElementById('textInput')) {
-  updateTextDemo();
+  setTimeout(updateTextDemo, 500); // Small delay to ensure initialization
 }
 
 // ==================== Colored Demo ====================
@@ -216,15 +260,21 @@ function createColorfulSample() {
 }
 
 window.loadColoredDemo = function() {
-  const canvas = createColorfulSample();
-  const coloredGen = new AsciiGenerator({
-    charset: CharsetPreset.BLOCK,
-    width: 80,
-    colored: true
-  });
 
-  const result = coloredGen.convertImage(canvas);
-  document.getElementById('coloredOutput').innerHTML = result.html;
+  try {
+    const canvas = createColorfulSample();
+    const coloredGen = new AsciiGenerator({
+      charset: CharsetPreset.BLOCK,
+      width: 80,
+      colored: true
+    });
+
+    const result = coloredGen.convertImage(canvas);
+    document.getElementById('coloredOutput').innerHTML = result.html;
+
+  } catch (e) {
+    console.error('❌ Colored demo failed:', e);
+  }
 };
 
 // ==================== Charset Comparison ====================
@@ -245,6 +295,7 @@ function createTestImage() {
 }
 
 window.compareCharsets = function() {
+
   const canvas = createTestImage();
   const container = document.getElementById('charsetComparison');
   container.innerHTML = '';
@@ -252,29 +303,34 @@ window.compareCharsets = function() {
   const charsets = ['BLOCK', 'STANDARD', 'MINIMAL', 'EXTENDED'];
 
   charsets.forEach(charset => {
-    const gen = new AsciiGenerator({
-      charset: CharsetPreset[charset],
-      width: 60,
-      colored: false
-    });
+    try {
+      const gen = new AsciiGenerator({
+        charset: CharsetPreset[charset],
+        width: 60,
+        colored: false
+      });
 
-    const result = gen.convertImage(canvas);
+      const result = gen.convertImage(canvas);
 
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <h4>${charset}</h4>
-      <div class="demo-output" style="max-height: 200px; overflow: hidden;">
-        ${result.html}
-      </div>
-    `;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <h4>${charset}</h4>
+        <div class="demo-output" style="max-height: 200px; overflow: hidden; white-space: nowrap; line-height: 1.0;">
+          ${result.html}
+        </div>
+      `;
 
-    container.appendChild(card);
+      container.appendChild(card);
+    } catch (e) {
+      console.error(`❌ Charset ${charset} failed:`, e);
+    }
   });
 };
 
 // ==================== Game Demo ====================
 window.startGameDemo = function() {
+
   const canvas = document.createElement('canvas');
   canvas.width = 300;
   canvas.height = 300;
@@ -291,26 +347,31 @@ window.startGameDemo = function() {
   let dy = 2;
 
   function animateGame() {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 300, 300);
+    try {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, 300, 300);
 
-    // Draw moving sprite
-    ctx.fillStyle = '#FFD700';
-    ctx.beginPath();
-    ctx.arc(x, y, 20, 0, Math.PI * 2);
-    ctx.fill();
+      // Draw moving sprite
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(x, y, 20, 0, Math.PI * 2);
+      ctx.fill();
 
-    // Update position
-    x += dx;
-    y += dy;
+      // Update position
+      x += dx;
+      y += dy;
 
-    if (x <= 20 || x >= 280) dx = -dx;
-    if (y <= 20 || y >= 280) dy = -dy;
+      if (x <= 20 || x >= 280) dx = -dx;
+      if (y <= 20 || y >= 280) dy = -dy;
 
-    const result = gameGen.convertImage(canvas);
-    document.getElementById('gameDemo').innerHTML = result.html;
+      const result = gameGen.convertImage(canvas);
+      document.getElementById('gameDemo').innerHTML = result.html;
 
-    gameAnimationId = requestAnimationFrame(animateGame);
+      gameAnimationId = requestAnimationFrame(animateGame);
+    } catch (e) {
+      console.error('❌ Game render error:', e);
+      cancelAnimationFrame(gameAnimationId);
+    }
   }
 
   animateGame();
@@ -325,6 +386,7 @@ window.stopGameDemo = function() {
 
 // ==================== Animation Demo ====================
 window.startAnimation = function() {
+
   const canvas = document.createElement('canvas');
   canvas.width = 400;
   canvas.height = 400;
@@ -338,31 +400,36 @@ window.startAnimation = function() {
   let frame = 0;
 
   function animate() {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 400, 400);
+    try {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, 400, 400);
 
-    // Rotating gradient
-    const gradient = ctx.createLinearGradient(
-      200 + Math.cos(frame * 0.02) * 200,
-      200 + Math.sin(frame * 0.02) * 200,
-      200 - Math.cos(frame * 0.02) * 200,
-      200 - Math.sin(frame * 0.02) * 200
-    );
-    gradient.addColorStop(0, `hsl(${frame % 360}, 70%, 50%)`);
-    gradient.addColorStop(1, `hsl(${(frame + 180) % 360}, 70%, 50%)`);
-    ctx.fillStyle = gradient;
+      // Rotating gradient
+      const gradient = ctx.createLinearGradient(
+        200 + Math.cos(frame * 0.02) * 200,
+        200 + Math.sin(frame * 0.02) * 200,
+        200 - Math.cos(frame * 0.02) * 200,
+        200 - Math.sin(frame * 0.02) * 200
+      );
+      gradient.addColorStop(0, `hsl(${frame % 360}, 70%, 50%)`);
+      gradient.addColorStop(1, `hsl(${(frame + 180) % 360}, 70%, 50%)`);
+      ctx.fillStyle = gradient;
 
-    // Pulsing circle
-    const radius = 80 + Math.sin(frame * 0.05) * 40;
-    ctx.beginPath();
-    ctx.arc(200, 200, radius, 0, Math.PI * 2);
-    ctx.fill();
+      // Pulsing circle
+      const radius = 80 + Math.sin(frame * 0.05) * 40;
+      ctx.beginPath();
+      ctx.arc(200, 200, radius, 0, Math.PI * 2);
+      ctx.fill();
 
-    const result = animGen.convertImage(canvas);
-    document.getElementById('animationOutput').innerHTML = result.html;
+      const result = animGen.convertImage(canvas);
+      document.getElementById('animationOutput').innerHTML = result.html;
 
-    frame++;
-    animationId = requestAnimationFrame(animate);
+      frame++;
+      animationId = requestAnimationFrame(animate);
+    } catch (e) {
+      console.error('❌ Animation render error:', e);
+      cancelAnimationFrame(animationId);
+    }
   }
 
   animate();
@@ -417,4 +484,4 @@ window.addEventListener('scroll', () => {
   });
 });
 
-console.log('🎮 Examples page loaded!');
+

@@ -1,8 +1,0 @@
-🔒 Testing Security Limits...
-
-✅ Constructor: Huge Standard Dimensions PASSED: Caught expected error: "Total character count (30000000) exceeds maximum allowed (25000000)"
-✅ Constructor: Huge Colored Dimensions PASSED: Caught expected error: "Total character count (4000000) exceeds maximum allowed for colored output (1000000)"
-✅ Constructor: Safe Colored Dimensions PASSED: Execution successful
-✅ updateConfig: Huge Colored Dimensions PASSED: Caught expected error: "Total character count (4000000) exceeds maximum allowed for colored output (1000000)"
-
-Results: 4 passed, 0 failed.
