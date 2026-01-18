@@ -2,7 +2,7 @@
  * Interactive examples for ts-ascii-engine documentation
  */
 
-import { AsciiGenerator, CharsetPreset } from '../../dist-esm/index.js';
+import { AsciiGenerator, CharsetPreset } from '../dist-esm/index.js';
 
 
 
