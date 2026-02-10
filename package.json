@@ -1,6 +1,6 @@
 {
   "name": "ts-ascii-engine",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A high-performance, zero-dependency TypeScript library for converting images, video streams, and text into ASCII art. Framework agnostic.",
   "main": "dist/index.js",
   "module": "dist-esm/index.js",
@@ -39,9 +39,9 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist-esm/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     }
   }
 }
