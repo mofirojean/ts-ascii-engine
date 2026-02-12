@@ -12,7 +12,6 @@ dist-esm/
 *.njsproj
 *.sln
 *.tsbuildinfo
-DEPLOY.md
 
 # Allow docs build assets
 !docs/dist-esm/
